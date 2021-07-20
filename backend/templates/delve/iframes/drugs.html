@@ -1,0 +1,81 @@
+
+{% block header_block %}
+<script src="https://pubchem.ncbi.nlm.nih.gov/pcfe/structure-3d-webgl/structure-3d-webgl.min.js"></script>
+{% endblock %}
+
+{% block body_block %}
+
+<div class="container-fluid">
+<div class="row">
+    <div class=col-md-6>
+        <div id="table-wrapper" style="height: 800px; width: 100%; overflow:auto;">
+            <table class="table table-dark table-hover" id="chem_table">
+                <thead>
+                    <tr>
+                        <th>Drug Name</th>
+                        <th>Drug Smile</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in info %}
+                        <tr id = {{ item.cid }}>
+                            <td> {{ item.drug_name }}</td>
+                            <td> {{ item.cid|add:"0" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class=col-md-6>
+        <div style="height: 80%; width: 80%;">
+        <iframe id="output" class="pubchem-widget" scrolling="no" src="" style="border: 0; width: 100%; max-height: 800px;"></iframe></div>
+    </div>
+
+</div>
+</div>
+<script type="text/javascript" src="https://pubchem.ncbi.nlm.nih.gov/pcfe/libs/iframeResizer.min.js"></script>
+<script type="text/javascript">iFrameResize({log:false,checkOrigin:false}, '.pubchem-widget')</script>
+
+<script>
+    // prime api it fails on the first time every time, so here we look up asprin while hiding the window
+    // $(output).hide()
+    // const Http = new XMLHttpRequest();
+    // const url='https://pubchem.ncbi.nlm.nih.gov/pcfe/structure-3d-webgl/structure-3d-webgl.min.js';
+    // Http.open("GET", url);
+    // Http.send();
+    
+    window.onload = prime_api()
+    function prime_api(){
+        draw_widget("241")
+        $(output).hide()    
+    }
+    
+    var tbl = document.getElementById("chem_table");
+    if (tbl != null) {
+        for (var i = 0; i < tbl.rows.length; i++) {
+            tbl.rows[i].onclick = function () { draw_widget(this.id);
+            };
+        }
+    }
+    
+    function draw_widget(chem_cid){
+        $(output).show()
+        var http = new XMLHttpRequest();
+        var slug = "https://pubchem.ncbi.nlm.nih.gov/compound/";
+        var endslug = "#section=3D-Conformer&embed=true";
+        var source = slug.concat(chem_cid | 0, endslug);
+        document.getElementById('output').src = source;
+
+        console.log('Status: '+document.getElementById('output').src);
+
+        if(http.status == 200){
+            var endslug = "#section=2D-Structure&embed=true";
+            var source = slug.concat(chem_cid | 0, endslug);
+            // document.getElementById('output').src = source;         
+        }
+            
+    }
+    </script>

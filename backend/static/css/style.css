@@ -1,0 +1,270 @@
+/* Colour Vars*/
+:root {
+  --color1: #000000;
+  --color2: #74937D;
+  --color3: #E2D8D0;
+  --color4: #00002a;
+
+
+  --color6: #073642;
+
+  /*Backgrond Color */
+  --color7: black;
+
+  /* Shepherd Yellow */
+  --color5: #FFE928;
+
+  --color8: #2c3538;
+  --color9: #545e60;  
+}
+body{
+  background: var(--color7);
+  /* For Sidebar */
+  display: flex;
+  align-items: stretch;
+  perspective: 1500px; 
+}
+html, body {
+  margin: 0;
+  height: 100%;
+  font-size: 18px;
+}
+@font-face {
+    font-family: 'spinmedium';
+    src: url('spin-medium-webfont.woff2') format('woff2'),
+         url('spin-medium-webfont.woff') format('woff');
+    font-weight: normal;
+}
+
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff; 
+  border-bottom: 1px solid #d4d4d4; 
+}
+.autocomplete-items div:hover {
+  background-color: #e9e9e9; 
+}
+.autocomplete-active {
+  background-color: DodgerBlue !important; 
+  color: #ffffff; 
+}
+.jumbotron-dark { 
+  background-color: var(--color7);
+  color: white;
+}
+
+.spin {
+  font-family: 'spinmedium';
+  font-weight:normal;
+  /* font-style:normal;
+  font-size: 25px; */
+}
+.dark li a{
+  color: white !important;
+  background-color: var(--color7);
+}
+.navbar-dark a:hover {  
+  color: var(--color5) !important;
+  width: 100%;
+  padding: 0;
+}
+.navbar-dark a:hover::before {
+  color: var(--color5) !important;
+  width: 5%;
+}
+.navbar-dark a::before {
+  content: '';
+  display: block;
+  height: 5px;
+  background-color: var(--color5);
+  position: absolute;
+  top: 0;
+  width: 0%;
+  transition: all ease-in-out 250ms;
+}
+.nav-link {color: white;}
+
+.wrapper {
+  display: flex;
+  width: 100%;
+}
+
+#wrapper {
+  display: flex;
+}
+
+#wrapper #content-wrapper {
+  background-color: #f8f9fc;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  /* full screen */
+  width: 100vw;
+  height: 100vh;
+  /* transparent black */
+  background: rgba(0, 0, 0, 0.7);
+  /* middle layer, i.e. appears below the sidebar */
+  z-index: 998;
+  opacity: 0;
+  /* animate the transition */
+  transition: all 0.5s ease-in-out;
+}
+/* display .overlay when it has the .active class */
+.overlay.active {
+  display: block;
+  opacity: 1;
+}
+
+#dismiss {
+  width: 35px;
+  height: 35px;
+  position: absolute;
+  /* top right corner of the sidebar */
+  top: 10px;
+  right: 10px;
+}
+
+
+
+
+
+
+
+
+/* ====================================================================================== */
+.carousel-item {
+  height: 65vh;
+  min-height: 350px;
+  background: no-repeat center center scroll;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+body {
+  font-family: "Lato", sans-serif;
+}
+
+#main {
+  background-color: white;
+  width: 100%;
+  padding: 5px 10px 5px 0;
+}
+
+.sidenav {
+  height: 100%;
+  width: 5%;
+  position: fixed;
+  z-index: 20005;
+  top: 0;
+  left: 0;
+  background-color: #4e73df;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+.sidenav a{
+  color: #f8f9fc;
+  padding: 11px 8px 11px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav button {
+  margin: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: yellow;
+}
+
+.sidenav .header {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  color: #818181;
+  display: block;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+
+/* Zoomable Circle packing (Bubbles) */
+.node {
+  cursor: pointer;
+}
+
+.node:hover {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node--leaf {
+  fill: white;
+}
+
+.label {
+  font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-anchor: middle;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+}
+
+.label,
+.node--root,
+.node--leaf {
+  pointer-events: none;
+}
+
+.d-none {
+  display: none !important;
+}
+
+.rounded-circle {
+  border-radius: 50% !important;
+}
+
+.border-0 {
+  border: 0 !important;
+}
+
+#content-wrapper {
+  background-color:white;
+}
+
+*, .fa, .fas {
+  font-family: 'spinmedium' !important;
+}

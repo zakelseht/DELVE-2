@@ -1,0 +1,90 @@
+/* Colour Vars*/
+:root {
+  --color1: #000000;
+  --color2: #74937D;
+  --color3: #E2D8D0;
+  --color4: #00002a;
+
+
+  --color6: #073642;
+
+  /*Backgrond Color */
+  --color7: black;
+
+  /* Shepherd Yellow */
+  --color5: #FFE928;
+
+  --color8: #2c3538;
+  --color9: #545e60;  
+}
+body{
+  background: var(--color7)
+}
+
+@font-face {
+    font-family: 'spinmedium';
+    src: url("spin-medium-webfont.0b645acbbad6.woff2") format('woff2'),
+         url("spin-medium-webfont.f36638eb4d58.woff") format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff; 
+  border-bottom: 1px solid #d4d4d4; 
+}
+.autocomplete-items div:hover {
+  background-color: #e9e9e9; 
+}
+.autocomplete-active {
+  background-color: DodgerBlue !important; 
+  color: #ffffff; 
+}
+.jumbotron-dark { 
+  background-color: var(--color7);
+  color: white;
+}
+
+.spin {
+  font-family: 'spinmedium';
+  font-weight:normal;
+  font-style:normal;
+  font-size: 25px;
+}
+.navbar-dark li a{
+  color: white !important;
+  background-color: var(--color7);
+}
+.navbar-dark a:hover {
+  color: var(--color5) !important;
+}
+.navbar-dark a:hover::before {
+  color: var(--color5) !important;
+  width: 5%;
+}
+.navbar-dark a::before {
+  content: '';
+  display: block;
+  height: 5px;
+  background-color: var(--color5);
+  position: absolute;
+  top: 0;
+  width: 0%;
+  transition: all ease-in-out 250ms;
+}
+

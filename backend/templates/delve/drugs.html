@@ -1,0 +1,1044 @@
+<!-- path/to/and/name.html (optional but usefull)-->
+{% extends "delve/base.html" %}
+{% comment %} Data binding {% endcomment %}
+{% load staticfiles %}
+{% comment %} {% static "channels/js/websocketbridge.js" %} {% endcomment %}
+
+{% block head %}
+<script src="https://pubchem.ncbi.nlm.nih.gov/pcfe/structure-3d-webgl/structure-3d-webgl.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- css for tabular row -->
+<link rel="stylesheet" href="{% static 'css/delve/ic50.css' %}">
+<script src="{% static 'js/delve/AJAX_CALLS.js' %}"></script>
+
+<script src="{% static 'js/delve/tab.js' %}"></script>
+{% endblock %}
+
+{% block body_block %}
+<div style="padding: 0% 15%;">
+  <script>
+    $(document).ready(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+    });
+  </script>
+  </head>
+  <!-- HOME -->
+  <div class="tabs">
+    <ul class="tabs-list">
+      <li class="active"><a href="#tab1">Drugs</a></li>
+      <li><a href="#tab2">Ic50</a></li>
+      <li><a href="#tab3">Stats</a></li>
+      <li><a href="#tab4">Reports</a></li>
+    </ul>
+
+    <div id="tab1" class="tab active">
+      <h3>Drugs structure</h3>
+      <div id="includedContent"></div>
+
+      <div class="container-fluid">
+        <div class="row">
+          <div class=col-md-6>
+            <div id="table-wrapper" style="height: 800px; width: 100%; overflow:auto;">
+              <table class="table table-dark table-hover" id="chem_table">
+                <thead>
+                  <tr>
+                    <th>Drug Name</th>
+                    <th>Drug Smile</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% for item in info %}
+                  <tr id={{ item.cid }}>
+                    <td>{{ item.drug_name }}</td>
+                    <td>{{ item.cid|add:"0" }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class=col-md-6>
+            <div style="height: 80%; width: 80%;">
+              <iframe id="output" class="pubchem-widget" scrolling="no" src=""
+                style="border: 0; width: 100%; max-height: 800px;"></iframe></div>
+          </div>
+
+        </div>
+      </div>
+      <script type="text/javascript" src="https://pubchem.ncbi.nlm.nih.gov/pcfe/libs/iframeResizer.min.js"></script>
+      <script type="text/javascript">iFrameResize({ log: false, checkOrigin: false }, '.pubchem-widget')</script>
+      <script src="{% static 'js/delve/drug_ic50.js' %}"></script>
+
+    </div>
+    <div id="tab2" class="tab">
+      <h3>Ic50 search</h3>
+      <p>
+        IC50 API calls will be conducted here!!
+      </p>
+    </div>
+    <div id="tab3" class="tab">
+      <script src="{% static 'js/delve/graphics.js' %}"></script>
+
+      <h3>Statistical Graphs</h3>
+
+      <!--Grid row-->
+      <div class="row">
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+          <!-- Card -->
+          <div class="card gradient-card">
+
+            <div class="card-image" style="background-image:linear-gradient(90deg,#ed5565,#d52739 100%);">
+              
+              <!-- Content -->
+              <a href="#idgraphics">
+                <div class="text-white d-flex h-10">
+                  <div class="first-content align-self-center p-3">
+                    <h3 class="card-title" data-toggle="collapse" data-target="#collapseOne">
+                      Graph for specific id
+                    </h3>
+                    <p class="lead mb-0" data-toggle="collapse" data-target="#graphicId">Click on this card to see
+                      details</p>
+                  </div>
+                  <div class="second-content align-self-center mx-auto text-center">
+                    <i class="fas fa-chart-area fa-3x"></i>
+                  </div>
+                </div>
+              </a>
+
+            </div>
+
+            <!-- Data -->
+            <div id="graphicId" class="collapse">
+              <p> information you can get according to each id entered </p>
+            </div>
+            <!-- Graphics using index -->
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne">
+              <div class="row">
+                <div class="col-8">
+                  <input id="graphicRequestDynamic" type="text" name="search" autocomplete="on">
+                  <button id="dynamicButton">Get Graph</button>
+                </div>
+              </div>
+              <div class="row">
+                <!-- Button trigger modal -->
+                <button name="graphics-input" type="button" class="btn btn-primary mt-2 ml-3" data-toggle="modal"
+                  data-target="#exampleModal">
+                  Show Graphics for specific id
+                </button>
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                  aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div id="graphic-modal-body" class="graphic-modal-body">
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Card -->
+
+        </div>
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+          <!-- Card -->
+          <div class="card gradient-card">
+
+            <div class="card-image" style="background-image:linear-gradient(90deg, #42c9a7 , #19a783 100%);">
+              <!-- #21a87d;"> -->
+              <!-- style="background-image: url(https://mdbootstrap.com/img/Photos/Horizontal/Work/4-col/img%20%2814%29.jpg);"> -->
+
+              <!-- Content -->
+              <a href="#!">
+                <div class="text-white d-flex h-100 ">
+
+                  <!-- mask purple-gradient-rgba"> -->
+                  <div class="first-content align-self-center p-3">
+                    <h3 class="card-title" data-toggle="collapse" data-target="#collapseTwo">Leading drugs on CellLine
+                    </h3>
+                    <p class="lead mb-0" data-toggle="collapse" data-target="#cellLineGraphics">Click on this card to
+                      see details</p>
+                  </div>
+                  <div class="second-content  align-self-center mx-auto text-center">
+                    <i class="fas fa-chart-line fa-3x"></i>
+                  </div>
+                </div>
+              </a>
+
+            </div>
+
+            <!-- Data -->
+            <div id="cellLineGraphics" class="collapse">
+              <p>Input: Cell Line Name
+                Result: Drugs which can perform best with this cell line
+              </p>
+            </div>
+            <!-- Cell line graphics -->
+            <div id="collapseTwo" class="collapse">
+              <div class="row">
+                <div class="col-8">
+                  <input id="cellLineRequestDynamic" type="text" name="cellLine" autocomplete="on">
+                  <button id="cellLineButton">Enter Cell line</button>
+
+                </div>
+                <form method="GET">
+                  <select name="dropdown" id="cell_scorename">
+                    <option selected="selected" disabled>Score:</option>
+                    <option value="Bliss_score" data-toggle="tooltip" title="Bliss Score!">Bliss_score</option>
+                    <option value="Chou_score" data-toggle="tooltip" title="Chou Score!">Chou_score</option>
+                    <option value="ZIP_score" data-toggle="tooltip" title="ZIP Score!">ZIP_score</option>
+                    <option value="HSA_score" data-toggle="tooltip" title="HSA Score!">HSA_score</option>
+                  </select>
+                </form>
+              </div>
+              <div class="row">
+
+                <!-- Button trigger modal -->
+                <button name="graphics-input" type="button" class="btn btn-primary mt-2 ml-3" data-toggle="modal"
+                  data-target="#cellLineModal">
+                  Get Drugs perform best on cell line
+                </button>
+
+                <!-- <form action="" method="GET" class="btn-group d-flex justify-content-center">
+    Enter Cell Line &nbsp; <input type="text" name="cellLine" class="commentarea"> </input>
+  </form> -->
+                <div class="modal fade" id="cellLineModal" tabindex="-1" role="dialog"
+                  aria-labelledby="cellLineModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg" role="document"> 
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="cellLineModalLabel">cell line modal</h5>
+                        <button type="button" class="close" data-dismiss="Modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div id="cell-graphic-modal-body" class="graphic-modal-body">
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Card -->
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+          <!-- Card -->
+          <div class="card gradient-card">
+
+            <div class="card-image" style="background-image:linear-gradient(90deg,#303395 ,#2b8fc1 100%);">
+              <!-- "background-color:#997a8d;"> -->
+              <!-- style="background-image: url(https://mdbootstrap.com/img/Photos/Horizontal/Work/4-col/img%20%2814%29.jpg);"> -->
+
+              <!-- Content -->
+              <a href="#!">
+                <div class="text-white d-flex h-100 ">
+                  <!-- mask peach-gradient-rgba"> -->
+                  <div class="first-content align-self-center p-3">
+                    <h3 class="card-title" data-toggle="collapse" data-target="#collapseThree">Leading Cell Lines</h3>
+                    <p class="lead mb-0" data-toggle="collapse" data-target="#DrugGraphicsId">Click on this card to see
+                      details</p>
+                  </div>
+                  <div class="second-content  align-self-center mx-auto text-center">
+                    <i class="fa fa-bar-chart fa-3x"></i>
+                  </div>
+                </div>
+              </a>
+
+            </div>
+
+            <!-- Data -->
+            <div id="DrugGraphicsId" class="collapse">
+              <p>
+                Input: Enter name of the Drug
+                Result:Cell line graphics which can act well with specific drug
+              </p>
+            </div>
+            <!-- Drug graphics -->
+            <div id="collapseThree" class="collapse">
+              <div class="row">
+                <div class="col-8">
+                  <input id="drugRequestDynamic" type="text" name="drugg" autocomplete="on">
+                  <button id="drugButton">Enter drug name</button>
+                </div>
+                <form method="GET">
+                  <select name="dropdown" id="d_scorename">
+                    <option selected="selected" disabled>Score:</option>
+                    <option value="Bliss_score" data-toggle="tooltip" title="Bliss Score!">Bliss_score</option>
+                    <option value="Chou_score" data-toggle="tooltip" title="Chou Score!">Chou_score</option>
+                    <option value="ZIP_score" data-toggle="tooltip" title="ZIP Score!">ZIP_score</option>
+                    <option value="HSA_score" data-toggle="tooltip" title="HSA Score!">HSA_score</option>
+                  </select>
+                  <!-- <input type="submit" value="Select"> -->
+                </form>
+              </div>
+              <div class="row">
+
+                <!-- Button trigger modal -->
+                <button name="graphics-input" type="button" class="btn btn-primary mt-2 ml-3" data-toggle="modal"
+                  data-target="#drugModal">
+                  Get Cell Lines Perform best on Drug
+                </button>
+
+                <div class="modal fade" id="drugModal" tabindex="-1" role="dialog" aria-labelledby="drugModalLabel"
+                  aria-hidden="true">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="drugModalLabel">drug modal</h5>
+                        <button type="button" class="close" data-dismiss="Modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div id="drug-graphic-modal-body" class="graphic-modal-body">
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+          <!-- Card -->
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+          <!-- Card -->
+          <div class="card gradient-card">
+
+            <div class="card-image" style="background-image:linear-gradient(90deg,#184e68,#6078ea 100%);">
+              <!-- "background-color:#9b2e6c;"> -->
+              <!-- style="background-image: url(https://mdbootstrap.com/img/Photos/Horizontal/Work/4-col/img%20%2814%29.jpg);"> -->
+
+              <!-- Content -->
+              <a href="#!">
+                <div class="text-white d-flex h-100 mask linear-gradient(transparent, #FFF) left repeat">
+                  <!-- mask aqua-gradient-rgba"> -->
+                  <div class="first-content align-self-center p-3">
+                    <h3 class="card-title" data-toggle="collapse" data-target="#collapseFour">Cancer vs Drugs</h3>
+                    <p class="lead mb-0" data-toggle="collapse" data-target="#CancervDrug">Click on this card to see
+                      details</p>
+                  </div>
+                  <div class="second-content  align-self-center mx-auto text-center">
+                    <i class="fas fa-pills fa-3x"></i>
+                  </div>
+                </div>
+              </a>
+
+            </div>
+            <!-- Data -->
+            <div id="CancervDrug" class="collapse">
+              <p>
+                Input: Cancer Name
+                Result: Best performing drugs on specific cancer
+              </p>
+            </div>
+            <!-- Cancer graphics -->
+            <div id="collapseFour" class="collapse">
+              <div class="row">
+                <div class="col-8">
+                  <input id="indicationRequestDynamic" type="text" name="indication" autocomplete="on">
+                  <button id="indiButton">Enter cancer name</button>
+                </div>
+
+                <form method="GET">
+                  <select name="dropdown" id="c_scorename">
+                    <option selected="selected" disabled>Score:</option>
+                    <option value="Bliss_score" data-toggle="tooltip" title="Bliss Score!">Bliss_score</option>
+                    <option value="Chou_score" data-toggle="tooltip" title="Chou Score!">Chou_score</option>
+                    <option value="ZIP_score" data-toggle="tooltip" title="ZIP Score!">ZIP_score</option>
+                    <option value="HSA_score" data-toggle="tooltip" title="HSA Score!">HSA_score</option>
+                  </select>
+                </form>
+              </div>
+              <div class="row">
+
+                <!-- Button trigger modal -->
+                <button name="graphics-input" type="button" class="btn btn-primary mt-2 ml-3" data-toggle="modal"
+                  data-target="#indiModal">
+                  Get Drugs Perform best on Cancer
+                </button>
+
+                <div class="modal fade" id="indiModal" tabindex="-1" role="dialog" aria-labelledby="indiModalLabel"
+                  aria-hidden="true">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="indiModalLabel">cancer modal</h5>
+                        <button type="button" class="close" data-dismiss="Modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div id="indi-graphic-modal-body" class="graphic-modal-body">
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+            <!-- Card -->
+
+          </div>
+          <!--Grid column-->
+
+          <!--Grid column-->
+          <div class="col-md-6 mb-4">
+
+            <!-- Card -->
+            <div class="card gradient-card">
+
+              <div class="card-image" style="background-image:linear-gradient(90deg,#e57eb7, #be4c90 100%);">
+                <!-- style="background-image: url(https://mdbootstrap.com/img/Photos/Horizontal/Work/4-col/img%20%2814%29.jpg)"> -->
+                <!-- style="background-color:#ff7e72;" -->
+                <!-- Content -->
+                <a href="#!">
+                  <div class="text-white d-flex h-100 ">
+
+                    <!-- mask spring-warmth-gradient-rgba">  -->
+                    <div class="first-content align-self-center p-3">
+                      <h3 class="card-title" data-toggle="collapse" data-target="#collapseFive">Drugs vs Cancer</h3>
+                      <p class="lead mb-0" data-toggle="collapse" data-target="#DrugvCancer">Click on this card to see details</p>
+                    </div>
+                    <div class="second-content align-self-center mx-auto text-center">
+                      <i class="fas fa-notes-medical fa-3x"></i>
+                    </div>
+                  </div>
+                </a>
+
+              </div>
+
+              <!-- Data -->
+              <div id="DrugvCancer" class="collapse">
+                <p>
+                  Input: Enter the drug Name
+                  Result: Leading Indication for specific drug
+                </p>
+              </div>
+              <!-- Drug vs Cancer graphics -->
+              <div id="collapseFive" class="collapse">
+              <div class="row">
+                <div class="col-8">
+                  <input id="drugIndicationRequestDynamic" type="text" name="drugindication" autocomplete="on">
+                  <button id="drugIndiButton">Enter Drug name</button>
+                </div>
+
+                <form method="GET">
+                  <select name="dropdown" id="drugc_scorename">
+                    <option selected="selected" disabled>Score:</option>
+                    <option value="Bliss_score" data-toggle="tooltip" title="Bliss Score!">Bliss_score</option>
+                    <option value="Chou_score" data-toggle="tooltip" title="Chou Score!">Chou_score</option>
+                    <option value="ZIP_score" data-toggle="tooltip" title="ZIP Score!">ZIP_score</option>
+                    <option value="HSA_score" data-toggle="tooltip" title="HSA Score!">HSA_score</option>
+                  </select>
+                </form>
+
+              </div>
+
+              <div class="row">
+
+                <!-- Button trigger modal -->
+                <button name="graphics-input" type="button" class="btn btn-primary mt-2 ml-3" data-toggle="modal"
+                  data-target="#drugindiModal">
+                  Get Indications Perform best on entered Drug
+                </button>
+
+                <div class="modal fade" id="drugindiModal" tabindex="-1" role="dialog"
+                  aria-labelledby="drugindiModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="drugindiModalLabel">cancer modal</h5>
+                        <button type="button" class="close" data-dismiss="Modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div id="drugIndi-graphic-modal-body" class="graphic-modal-body">
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+
+            </div>
+            <!-- Card -->
+
+          </div>
+          <!--Grid column-->
+
+          <!--Grid column-->
+          <div class="col-md-6 mb-4">
+
+            <!-- Card -->
+            <div class="card gradient-card">
+
+              <div class="card-image" style="background-image:linear-gradient(90deg,#622774, #c53364 100%);">
+                <!-- #71489c;"> -->
+                <!-- style="background-image: url(https://mdbootstrap.com/img/Photos/Horizontal/Work/4-col/img%20%2814%29.jpg);"> -->
+
+                <!-- Content -->
+                <a href="#!">
+                  <div class="text-white d-flex h-100 ">
+                    <!-- mask purple-gradient-rgba"> -->
+                    <div class="first-content align-self-center p-3">
+                      <h3 class="card-title" data-toggle="collapse" data-target="#collapseSix">Drugs vs Drugs</h3>
+                      <p class="lead mb-0" data-toggle="collapse" data-target="#DrugvDrug">Click on this card to see details</p>
+                    </div>
+                    <div class="second-content  align-self-center mx-auto text-center">
+                      <i class="fas fa-vials fa-3x"></i>
+                    </div>
+                  </div>
+                </a>
+
+              </div>
+
+              <!-- Data -->
+              <div id="DrugvDrug" class="collapse">
+                <p>
+                  Input: Drug Name
+                  Result: Best pair of drug with entered drug
+                </p>
+              </div>
+              <!-- Content -->
+              <div id="collapseSix" class="collapse">
+              <div class="row">
+                <div class="col-8">
+                  <input id="d1RequestDynamic" type="text" name="drug1" autocomplete="on">
+                  <button id="d1Button">Enter Drug1 Name</button>
+                </div>
+
+                <form method="GET">
+                  <select name="dropdown" id="dvd_scorename">
+                    <option selected="selected" disabled>Score:</option>
+                    <option value="Bliss_score" data-toggle="tooltip" title="Bliss Score!">Bliss_score</option>
+                    <option value="Chou_score" data-toggle="tooltip" title="Chou Score!">Chou_score</option>
+                    <option value="ZIP_score" data-toggle="tooltip" title="ZIP Score!">ZIP_score</option>
+                    <option value="HSA_score" data-toggle="tooltip" title="HSA Score!">HSA_score</option>
+                  </select>
+                </form>
+              </div>
+              <div class="row">
+
+                <!-- Button trigger modal -->
+                <button name="graphics-input" type="button" class="btn btn-primary mt-2 ml-3" data-toggle="modal"
+                  data-target="#d1d2Modal">
+                  Drugs vs Drugs Score
+                </button>
+
+                <div class="modal fade" id="d1d2Modal" tabindex="-1" role="dialog" aria-labelledby="d1d2ModalLabel"
+                  aria-hidden="true">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="d1d2ModalLabel">drugs vs drugs modal</h5>
+                        <button type="button" class="close" data-dismiss="Modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div id="d1d2-graphic-modal-body" class="graphic-modal-body">
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            </div>
+            <!-- Card -->
+
+          </div>
+          <!--Grid column-->
+
+
+        </div>
+        <!--Grid row-->
+
+        <h3>Statastical Graphs</h3>
+        <!-- Graphics using index -->
+        <div class="row">
+          <div class="col-8">
+            <input id="graphicRequestDynamic" type="text" name="search" autocomplete="on">
+            <button id="dynamicButton">Get Graph</button>
+          </div>
+        </div>
+        <div class="row">
+          <!-- Button trigger modal -->
+          <button name="graphics-input" type="button" class="btn btn-primary mt-2 ml-3" data-toggle="modal"
+            data-target="#exampleModal">
+            Show Graphics for specific id
+          </button>
+          <!-- <span class="row"> Name of graphic </span> -->
+          <!-- Modal -->
+          <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div id="graphic-modal-body" class="graphic-modal-body">
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="sidebar-divider mb-4">
+        <!-- Cell line graphics -->
+        <div class="row">
+          <div class="col-8">
+            <input id="cellLineRequestDynamic" type="text" name="cellLine" autocomplete="on">
+            <button id="cellLineButton">Enter Cell line</button>
+          </div>
+        </div>
+        <div class="row">
+          <form method="GET">
+            <select name="dropdown" id="cell_scorename">
+              <option selected="selected" disabled>Score:</option>
+              <option value="Bliss_score" data-toggle="tooltip" title="Bliss Score!">Bliss_score</option>
+              <option value="Chou_score" data-toggle="tooltip" title="Chou Score!">Chou_score</option>
+              <option value="ZIP_score" data-toggle="tooltip" title="ZIP Score!">ZIP_score</option>
+              <option value="HSA_score" data-toggle="tooltip" title="HSA Score!">HSA_score</option>
+            </select>
+          </form>
+          <!-- Button trigger modal -->
+          <button name="graphics-input" type="button" class="btn btn-primary mt-2 ml-3" data-toggle="modal"
+            data-target="#cellLineModal">
+            Get Drugs perform best on cell line
+          </button>
+
+          <!-- <form action="" method="GET" class="btn-group d-flex justify-content-center">
+          Enter Cell Line &nbsp; <input type="text" name="cellLine" class="commentarea"> </input>
+        </form> -->
+          <div class="modal fade" id="cellLineModal" tabindex="-1" role="dialog" aria-labelledby="cellLineModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="cellLineModalLabel">cell line modal</h5>
+                  <button type="button" class="close" data-dismiss="Modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div id="cell-graphic-modal-body" class="graphic-modal-body">
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="sidebar-divider mb-4">
+        <!-- Drug graphics -->
+        <div class="row">
+          <div class="col-8">
+            <input id="drugRequestDynamic" type="text" name="drugg" autocomplete="on">
+            <button id="drugButton">Enter drug name</button>
+          </div>
+        </div>
+        <div class="row">
+          <form method="GET">
+            <select name="dropdown" id="d_scorename">
+              <option selected="selected" disabled>Score:</option>
+              <option value="Bliss_score" data-toggle="tooltip" title="Bliss Score!">Bliss_score</option>
+              <option value="Chou_score" data-toggle="tooltip" title="Chou Score!">Chou_score</option>
+              <option value="ZIP_score" data-toggle="tooltip" title="ZIP Score!">ZIP_score</option>
+              <option value="HSA_score" data-toggle="tooltip" title="HSA Score!">HSA_score</option>
+            </select>
+            <!-- <input type="submit" value="Select"> -->
+          </form>
+          <!-- Button trigger modal -->
+          <button name="graphics-input" type="button" class="btn btn-primary mt-2 ml-3" data-toggle="modal"
+            data-target="#drugModal">
+            Get Cell Lines Perform best on Drug
+          </button>
+
+          <!-- <form action="" method="GET" class="btn-group d-flex justify-content-center">
+          Enter Cell Line &nbsp; <input type="text" name="cellLine" class="commentarea"> </input>
+        </form> -->
+          <div class="modal fade" id="drugModal" tabindex="-1" role="dialog" aria-labelledby="drugModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="drugModalLabel">drug modal</h5>
+                  <button type="button" class="close" data-dismiss="Modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div id="drug-graphic-modal-body" class="graphic-modal-body">
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="sidebar-divider mb-4">
+        <!-- Cancer graphics -->
+        <div class="row">
+          <div class="col-8">
+            <input id="indicationRequestDynamic" type="text" name="indication" autocomplete="on">
+            <button id="indiButton">Enter cancer name</button>
+          </div>
+        </div>
+        <div class="row">
+          <form method="GET">
+            <select name="dropdown" id="c_scorename">
+              <option selected="selected" disabled>Score:</option>
+              <option value="Bliss_score" data-toggle="tooltip" title="Bliss Score!">Bliss_score</option>
+              <option value="Chou_score" data-toggle="tooltip" title="Chou Score!">Chou_score</option>
+              <option value="ZIP_score" data-toggle="tooltip" title="ZIP Score!">ZIP_score</option>
+              <option value="HSA_score" data-toggle="tooltip" title="HSA Score!">HSA_score</option>
+            </select>
+          </form>
+          <!-- Button trigger modal -->
+          <button name="graphics-input" type="button" class="btn btn-primary mt-2 ml-3" data-toggle="modal"
+            data-target="#indiModal">
+            Get Drugs Perform best on Cancer
+          </button>
+
+          <div class="modal fade" id="indiModal" tabindex="-1" role="dialog" aria-labelledby="indiModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="indiModalLabel">cancer modal</h5>
+                  <button type="button" class="close" data-dismiss="Modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div id="indi-graphic-modal-body" class="graphic-modal-body">
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="sidebar-divider mb-4">
+        <!-- Drug vs Cancer graphics -->
+        <div class="row">
+          <div class="col-8">
+            <input id="drugIndicationRequestDynamic" type="text" name="drugindication" autocomplete="on">
+            <button id="drugIndiButton">Enter Drug name</button>
+          </div>
+        </div>
+        <div class="row">
+          <form method="GET">
+            <select name="dropdown" id="drugc_scorename">
+              <option selected="selected" disabled>Score:</option>
+              <option value="Bliss_score" data-toggle="tooltip" title="Bliss Score!">Bliss_score</option>
+              <option value="Chou_score" data-toggle="tooltip" title="Chou Score!">Chou_score</option>
+              <option value="ZIP_score" data-toggle="tooltip" title="ZIP Score!">ZIP_score</option>
+              <option value="HSA_score" data-toggle="tooltip" title="HSA Score!">HSA_score</option>
+            </select>
+          </form>
+          <!-- Button trigger modal -->
+          <button name="graphics-input" type="button" class="btn btn-primary mt-2 ml-3" data-toggle="modal"
+            data-target="#drugindiModal">
+            Get Indications Perform best on entered Drug
+          </button>
+
+          <div class="modal fade" id="drugindiModal" tabindex="-1" role="dialog" aria-labelledby="drugindiModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="drugindiModalLabel">cancer modal</h5>
+                  <button type="button" class="close" data-dismiss="Modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div id="drugIndi-graphic-modal-body" class="graphic-modal-body">
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- drugs vs drugs -->
+        <hr class="sidebar-divider mb-4">
+
+        <div class="row">
+          <div class="col-8">
+            <input id="d1RequestDynamic" type="text" name="drug1" autocomplete="on">
+            <button id="d1Button">Enter Drug1 Name</button>
+          </div>
+        </div>
+        <div class="row">
+          <form method="GET">
+            <select name="dropdown" id="dvd_scorename">
+              <option selected="selected" disabled>Score:</option>
+              <option value="Bliss_score" data-toggle="tooltip" title="Bliss Score!">Bliss_score</option>
+              <option value="Chou_score" data-toggle="tooltip" title="Chou Score!">Chou_score</option>
+              <option value="ZIP_score" data-toggle="tooltip" title="ZIP Score!">ZIP_score</option>
+              <option value="HSA_score" data-toggle="tooltip" title="HSA Score!">HSA_score</option>
+            </select>
+          </form>
+          <!-- Button trigger modal -->
+          <button name="graphics-input" type="button" class="btn btn-primary mt-2 ml-3" data-toggle="modal"
+            data-target="#d1d2Modal">
+            Drugs vs Drugs Score
+          </button>
+
+          <div class="modal fade" id="d1d2Modal" tabindex="-1" role="dialog" aria-labelledby="d1d2ModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="d1d2ModalLabel">drugs vs drugs modal</h5>
+                  <button type="button" class="close" data-dismiss="Modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div id="d1d2-graphic-modal-body" class="graphic-modal-body">
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div id="tab4" class="tab">
+        <h3>Reports</h3>
+        <p>
+          Reports will be reported here!!
+        </p>
+      </div>
+
+    </div>
+
+
+
+
+    <div class="row" style="text-align: center;">
+      <!-- SEARCH -->
+      <div class="col-xl-8">
+        <div class="card shadow mb-4">
+          <!-- drug, cancer, scientist, cell lines or model -->
+          <form action="{% url 'Drugs' %}" method="get" class="col-6">
+            {{ form }}
+            {{ form.media }}
+            <button class="btn-sm btn-outline-warning my-2" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+      <!--  -->
+
+      <div class="col-xl-4">
+        <div class="card shadow mb-4">
+          <!-- ADD Button -->
+          <button class="col-3 btn-lg btn-outline-warning my-2" type="submit">ADD</button>
+        </div>
+      </div>
+      <!--  -->
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+      <div class="col-10">
+        <h4>Jumpt to: All Results | Potency | Concordance </h4>
+        <div class="card shadow mb-4">
+          <!-- CONTENT -->
+          <table class="table table-striped ">
+            <thead>
+              <tr>
+                <th>Experiments</th>
+                <th>Scientist</th>
+                <th>Therapeautics</th>
+                <th>Cancers</th>
+                <th>Cell Lines</th>
+              </tr>
+            </thead>
+            <!--  -->
+            <tbody>
+              {% for combo in combos %}
+              <tr>
+                <td><a href="{% url 'ic50_discrete' combo.id drug.id %}"><u>{{ combo.name }}</u></a></td>
+                <td>{{ combo.Scientist }}</td>
+                {% if combo.drug_2 == query %}
+                <td><a href=""><u>{{ combo.drug_1 }}</u></a></td>
+                {% else %}
+                <td><a href=""><u>{{ combo.drug_2 }}</u></a></td>
+                {% endif %}
+                <td><a href="{% url 'cancers' %}"><u>{{ combo.CellLine.indication }}</u></a></td>
+                <td><a href="{% url 'cancers' %}"><u>{{ combo.CellLine }}</u></a></td>
+              </tr>
+              {% endfor %}
+
+            </tbody>
+          </table>
+          <!--  -->
+          <!-- Pagination -->
+          <ul class="pagination justify-content-center">
+            {% if combos.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page=1" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">First</span>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ combos.previous_page_number }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+              </a>
+            </li>
+            {% endif %}
+            <li class="page-item">
+              <a class="page-link" href="?page=1">1</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page=2">2</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page=3">3</a>
+            </li>
+            {% if combos.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ combos.next_page_number }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ combos.paginator.num_pages }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Last</span>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+          <span class="current">
+            Page {{ combos.number }} of {{ combos.paginator.num_pages }}.
+          </span>
+        </div>
+      </div>
+      <div class="col-2">
+        <div class="card shadow mt-5 mb-3">
+          <!-- Card Header - Dropdown -->
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Results: Filter</h6>
+            <div class="dropdown no-arrow">
+              <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                aria-labelledby="dropdownMenuLink">
+                <div class="dropdown-header">Dropdown Header:</div>
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </div>
+            </div>
+          </div>
+          <!-- End of card header -->
+        </div>
+      </div>
+    </div>
+    <!-- BEGIN GRAPHICS -->
+
+    {% if not leading_cellLine_for_drug %}
+    <h1>Stats</h1>
+    <div>
+      {{ leading_drugs_all_scores|safe }}
+    </div>
+    <div>
+      {{ leading_drugs_avg_chou|safe }}
+    </div>
+    {% else %}
+    <h1>Stats</h1>
+    <div>
+      {{ leading_cellLine_for_drug|safe }}
+    </div>
+    <div>
+      {{ leading_cellLine_for_combo|safe }}
+    </div>
+    <div>
+      {{ leading_indication_for_drug|safe }}
+    </div>
+    <div>
+      {{ leading_indication_for_combo|safe }}
+    </div>
+    {% endif %}
+    <!--  -->
+  </div>
+  {% endblock %}

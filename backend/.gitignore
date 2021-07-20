@@ -1,0 +1,14 @@
+local_settings.py
+*__pycache__/
+templates/delve3
+helper/test2.csv
+helper/tester.py
+delve_site/mixins.py
+dump.rdb
+static/assets
+Analyze/temp.py
+templates/analyze/temp.html
+
+venv/
+venv2/
+*.DS_Store

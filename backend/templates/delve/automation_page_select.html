@@ -1,0 +1,31 @@
+<!-- path/to/and/name.html (optional but usefull)-->
+{% extends "delve/base.html" %}
+{% comment %} Data binding {% endcomment %}
+{% load static %}
+{% comment %} {% static "channels/js/websocketbridge.js" %} {% endcomment %}
+{% block head %}
+<!-- additional libs here -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script> -->
+
+<!-- <script src="{% static 'js/delve/AJAX_CALLS.js' %}"></script> -->
+<!-- <script src="{% static 'js/delve/automation_page.js' %}"></script> -->
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'css/delve/base.css' %}"> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script> -->
+
+{% endblock %}
+
+{% block body_block %}
+<!-- Table of google sheets here -->
+<!-- Table of Tickets here -->
+<div class="container" >
+    <div class="row">
+      <div class="col text-center vertical-center">
+        <button class="btn btn-primary btn-xl animated fadeIn">Google Sheets</button>
+        <a class="btn btn-primary btn-xl animated fadeIn" href="TicketTable">Automation Table</a>
+
+      </div>
+    </div>
+    <div>
+    </div>
+  </div>
+{% endblock %}

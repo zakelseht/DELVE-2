@@ -1,0 +1,112 @@
+{% extends "delve/base.html" %}
+{% load static %}
+
+
+
+{% block header_block %}
+    <!-- <link href="{% static 'dashboard_assets/css/light-bootstrap-dashboard.css?v=2.0.0' %}" rel="stylesheet" />
+    <script src="{% static 'dashboard_assets/js/light-bootstrap-dashboard.js?v=2.0.0' %}" type="text/javascript"></script> -->
+{% endblock %}
+
+{% block body_block %}
+<div class="container">
+  <div class="jumbotron jumbotron-dark text-center spin">
+    <h1>This is the Upload 2.0 Page</h1>
+    <p>Please enter the drugs you would like to compare:</p>
+    </div>
+</div>
+  </div>
+</div>
+
+<!-- UPLOAD EXCEL DATA -->
+<div class="container card">
+  <div class="card-header">
+    Upload the excel or sheets data:
+  </div>
+  <div class="card-body"  class=".form-inline" style="text-align:center;display:inline-block;">
+    <!-- <form id="formData" class='form-inline auto' method='POST'> -->
+    <form action="{% url 'upload_2' %}" method="POST" enctype="multipart/form-data" id="formData" class='form-inline auto'>
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-sm">{{ field.label_tag }}</span>
+        </div>
+        {% if drugFile %}
+          <input type='file' class="autocomplete" style="padding-right: 20px" id="drugFile" name="drugFile">    
+        {% else %}
+          <input type='file' class="autocomplete" style="padding-right: 20px" id="drugFile" name="drugFile">    
+        {% endif %}
+            <!-- {{ field }} -->
+        </div>
+
+        {% endfor %}
+        <button type="submit" id="sender" class="btn btn-outline-warning">Upload</button>
+    </form>
+    <form action="{% url 'upload_2' %}" method="GET" enctype="multipart/form-data"  id="formClear" class='form-inline auto'>
+      {% csrf_token %}
+      <button type="submit" id="sender" class="btn btn-outline-warning">Clear</button>
+  </form>
+  </div>    
+</div>
+<!---->
+<!-- POST REQUEST PROVIDED TABLE -->
+{% if excel_table %}
+<div class="container card">
+<div class="card-header" class=".form-inline" style="text-align:center;display:inline-block;">
+  {% for table in excel_table %}
+  <div style="display: inline-block" >
+    <!-- INDEX BUTTONS -->
+    <form action="{% url 'ada_upload' %}" method="GET" enctype="multipart/form-data" >
+      <button type="submit" id="show_table" value={{forloop.counter}} class="btn btn-outline-warning">{{forloop.counter}}</button>
+    </form>
+  </div> 
+  {% endfor %}
+</div> 
+<!-- TABLE FROM INDEX -->
+  <div>
+  Excel tables:
+  </div>
+  {% for table in excel_table %}
+    <!-- if forloop.counter == show_table -->
+    {% if True %}
+
+        <div class="w-25 p-3">
+          {% autoescape off %}
+          {{table}}
+          {% endautoescape %}
+        </div>
+    <!-- CONFIRM CORRECT TABLE -->
+    <form action="{% url 'Report' %}" method="POST" enctype="multipart/form-data"  class='form-inline auto'>
+      {% csrf_token %}
+    <button type="submit" id="sender" class="btn btn-outline-warning">Use this one</button></form>
+    {% endif %}
+  {% endfor %}
+</div>   
+
+{% endif %}
+
+<!-- <styles> </styles>-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+  $(document).on("paste", "input[type=text]", function(){
+    var input_id = $(this).attr("id");
+    var value;
+    if (event.originalEvent.clipboardData) { // Firefox, Chrome, etc.
+        value = event.originalEvent.clipboardData.getData('text/plain');
+    } else if (window.clipboardData) { // IE
+        value = window.clipboardData.getData("Text")
+    } else {
+        // clipboard is not available in this browser
+        return;
+    }
+    /* ... */
+    event.preventDefault(); // prevent the original paste
+});
+
+    function call_counter() {
+        
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "delve/base.html" %}
+{% comment %} Data binding {% endcomment %}
+{% load staticfiles %}
+{% comment %} {% static "channels/js/websocketbridge.js" %} {% endcomment %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/delve/ic50.css' %}">
+<script src="{% static 'js/delve/tab.js' %}"></script>
+{% endblock %}
+
+{% block body_block %}
+<div style="padding: 0% 15%;">
+
+  </head>
+  <!-- HOME -->
+  <div class="row" style="text-align: center;">
+    <!-- SEARCH -->
+
+    <!-- cell lines -->
+    <form action="" method="get" class="col-12">
+      {% csrf_token %}
+      {{ form }}
+      {{ form.media }}
+
+      <button class="btn-sm btn-outline-warning my-2" type="submit">Search</button>
+    </form>
+
+  </div>
+  
+  <!-- HOME -->
+  <div class="tabs">
+    <ul class="tabs-list">
+      <li class="active"><a href="#tab1">Cell line</a></li>
+      <li><a href="#tab2">Genomics</a></li>
+      <li><a href="#tab3">Tissue</a></li>
+      <li><a href="#tab4">Conditions</a></li>
+    </ul>
+
+    <div id="tab1" class="tab active">
+
+
+      <h3>Cell lines</h3>
+      <div id="Content"></div>
+      <p>Type in the input field to search the table for cell lines details:</p>
+      <input class="form-control" id="myInput" type="text" placeholder="Search..">
+      <br>
+      <div class="container-fluid">
+        <div class="row">
+          <div class=col-md-6>
+
+            <div id="table-wrapper" style="height: 800px; width: 200%; overflow:auto;">
+              <table class="table table-dark table-hover" id="cell line_table">
+                <thead>
+                  <tr style="background-color:blueviolet;">
+                    <th>id</th>
+                    <th>Name</th>
+                    <th>Indication</th>
+                    <th>In_culture</th>
+                    <th>Number_2d_cell_well</th>
+                    <th>Doubling_time</th>
+                    <th>Accession_number</th>
+                    <th>Density</th>
+                    <th>Models</th>
+                  </tr>
+                </thead>
+
+                <tbody id="myTable">
+                  {% for item in cellLines %}
+                  <tr>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.cell_line }}</td>
+                    <td>{{ item.indication }}</td>
+                    <td>{{ item.in_culture }}</td>
+                    <td>{{ item.number_2d_cell_well }}</td>
+                    <td>{{ item.doubling_time }}</td>
+                    <td>{{ item.accession_number }}</td>
+                    <td>{{ item.density }}</td>
+                    <td>{{ item.models }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class=col-md-6>
+            <div style="height: 80%; width: 80%;">
+              <iframe id="output" class="pubchem-widget" scrolling="no" src=""
+                style="border: 0; width: 100%; max-height: 800px;"></iframe></div>
+          </div>
+
+        </div>
+      </div>
+      <script src="{% static 'js/delve/filter.js' %}"></script>
+    </div>
+    <div id="tab2" class="tab">
+      <p>This is Genomics tab</p>
+    </div>
+    <div id="tab3" class="tab">
+      <p>This is Tissues tab</p>
+    </div>
+    <div id="tab4" class="tab">
+      <p>This is conditions tab</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

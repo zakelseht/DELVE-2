@@ -1,0 +1,29 @@
+{% extends "delve/base.html" %}
+{% comment %} Data binding {% endcomment %}
+{% load staticfiles %}
+{% comment %} {% static "channels/js/websocketbridge.js" %} {% endcomment %}
+{% block head %}
+  <script src="{% static 'js/delve/AJAX_CALLS.js' %}"></script>
+  <script src="{% static 'js/delve/search.js' %}"></script>
+{% endblock %}
+
+{% block body_block %}
+<div style="padding: 0% 15%;">
+  </head>
+  <!-- HOME -->
+
+  <h4>Search IC50 Values for Specific Drugs</h4>
+  </br>
+  Enter Drug Name &nbsp; <input type="text" id="search" name="search"> </input>
+  <button id="searchsubmit">Search Submit</button>
+
+  <br><br>
+  <h5> Ic50 Results </h5>
+  <br>
+  
+  <div id="search-results" class="col-xs-6">
+    {% include "delve/ic50_results.html" %}
+  </div>
+
+</div>
+{% endblock %}

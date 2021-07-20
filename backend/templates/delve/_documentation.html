@@ -1,0 +1,76 @@
+<!-- path/to/and/name.html (optional but usefull)-->
+{% extends "delve/base.html" %}
+{% comment %} Data binding {% endcomment %}
+{% load staticfiles %}
+{% comment %} {% static "channels/js/websocketbridge.js" %} {% endcomment %}
+{% block body_block %}
+<div class=""style="padding: 0px 50px;" >
+
+
+
+        <h1>TODO: add a filter bar (or search bar)</h1>
+        <ul>
+            <li>also add tag to any unused but potential scripts; like channels</li>
+            <li>add the log errors to the search or to the issues section to help with experienced issues and solutions found</li>
+            <li>
+                change the nav sidebar to option #3 in the link 
+                <a href="https://bootstrapious.com/p/bootstrap-sidebar">here</a> 
+            </li>
+        </ul>
+        <h2>Django related help</h2> 
+        <ul>
+            <li>
+                <a href="https://gist.github.com/scaryguy/6269293https://stackoverflow.com/questions/2412770/good-ways-to-sort-a-queryset-django">
+                    Sorting querysets
+                </a>            
+            </li>
+            <li>
+                <a href="https://stackoverflow.com/questions/9834038/django-order-by-query-set-ascending-and-descending">
+                    Ascending abd descending querysets
+                </a>            
+            </li>
+            <li></li>
+        </ul>
+
+        <h2>db related help</h2>
+        <ul>
+            <li>(1) 
+                <a href="https://stackoverflow.com/questions/35999186/change-type-of-django-model-field-from-charfield-to-foreignkey">
+                    <b>**Change type of Django model field from X to ForeignKey</b>
+                </a>
+            </li>
+            <li>
+                <a href="https://gist.github.com/scaryguy/6269293">
+                    Changing primary key
+                </a>
+                <div style="padding-left: 0px;">
+                    <pre>
+        <code>It's important to note that if the primary key is used as a foreign key constraint in other tables, 
+        you'll have to include the keyword CASCADE at the end of the DROP CONSTRAINT command. 
+        Subsequently, you will also need to individually recreate the foreign keys in the other tables.</code></pre>
+                    <figure>
+                        <figcaption>Your code title</figcaption>
+                        
+                            <pre><code contenteditable spellcheck="false">
+                                SHOW KEYS FROM table WHERE Key_name = 'PRIMARY'
+                            </code></pre>
+                        
+                    </figure>
+                </div>
+            </li>
+            <li>
+                <a href="https://stackoverflow.com/questions/5408156/how-to-drop-a-postgresql-database-if-there-are-active-connections-to-it">
+                    Terminate idle connections
+                </a>
+            </li>
+            <li>
+                <a href="https://docs.djangoproject.com/en/2.2/howto/writing-migrations/">
+                    making db commands inside django migrations folder/ CUTSOM MIGRATION
+                </a>
+            </li>
+        </ul>
+
+
+
+</div>
+{% endblock %}

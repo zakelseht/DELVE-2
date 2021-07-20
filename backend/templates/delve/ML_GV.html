@@ -1,0 +1,493 @@
+<!-- 
+    Created: 8/7/20
+    Author: Zak ELSeht
+    Editors: --
+    Notes: Page for ML and GV model, also first use of HTML5's data-attributes
+ -->
+<!-- path/to/and/name.html (optional but usefull)-->
+{% extends "delve/base.html" %}
+{% comment %} Data binding {% endcomment %}
+{% load staticfiles %}
+
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
+
+<script src="{% static 'js/delve/AJAX_CALLS.js' %}"></script>
+<script src="{% static 'js/delve/ML_GV.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/delve/base.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
+
+{% endblock %}
+
+{% block body_block %}
+
+<style>
+.select2 {
+        width:100%!important;
+    }
+
+.bouncing {
+        -webkit-animation: bounce .3s infinite alternate;
+  -moz-animation: bounce .3s infinite alternate; 
+  animation: bounce .3s infinite alternate;
+}
+@-webkit-keyframes bounce {
+  to { -webkit-transform: scale(1.2); }
+}
+@-moz-keyframes bounce {
+  to { -moz-transform: scale(1.2); }
+}
+@keyframes bounce {
+  to { transform: scale(1.2); }
+}
+</style>
+
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <!-- <div class="d-sm-flex align-items-center justify-content-between mb-4"><h1 class="h3 mb-0 text-gray-800">Molecule to Model</h1>
+    </div> -->
+
+    <!-- Special access row -->
+    {% if user.get_username == 'zak@shepherd.bio' or  user.get_username == ''%}
+    <div class="card p-2 align-items-center">
+        <div class="row">
+            <div  class="row mt-4 pl-2 mx-auto mt-auto">
+                <button class="btn btn-danger shadow-none myEyesOnly">
+                    Hide
+                </button>
+            </div>   
+            <div  class="row mt-4 pl-2 mx-auto mt-auto">
+                <button class="btn btn-primary shadow-none">
+                    Add/Update ML Model
+                </button>
+            </div>  
+    
+            <div class="row mt-4 pl-2 mx-auto mt-auto">
+                <button class="btn btn-primary shadow-none">
+                    <h5>Input: Gene</h5>
+                    <h5>Output: Drugs</h5>
+                    <h6>(Use Gene to search drugs)</h6>
+                </button>
+            </div>
+        </div>
+        <form action="/your-name/" method="post">
+            <div class="form-group">
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+            </div>
+        </form>
+    </div>
+    <script>
+        $(".myEyesOnly").click(function () {
+            $(this).parent().parent().parent().hide();
+        });
+    </script>
+
+
+    <!-- add model form -->
+    {% endif %}
+    <!-- SMILES Select & Input Row -->
+    <div class="row">
+        
+        <!-- SMILES Select Card -->
+        <div class="col-3 mx-auto mb-4 data-card">
+            <div class="card h-100 shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">BBBA Ticket: Select a SMILES</h6>
+                    <div class="dropdown no-arrow">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                    </a>
+                    </div>
+                </div>
+        
+                <div class="card-body mx-auto d-flex flex-column">
+                    <!-- Canonical Smiles Dropdown Search - Stage 1.0 -->
+                    <style>
+                        .select2 {
+                        width:100%!important;
+                        }
+                    </style>
+                    <select id='SMILE-Select' class="form-control align-items-start btn-outline-primary p-1 border-none" type="text" placeholder="Search" aria-label="Search">
+                        <option>Select a SMILES</option>
+                    </select>
+                    <h4 class="mx-auto p-4">OR</h4>
+                    <div class="mx-auto text-primary ml-1 mt-1 p-2 ">
+                        Add Smiles 
+                    </div>
+
+                    <div class="row text-center">
+                        <div class="align-self-center text-primary m-0 p-2 ">
+                            Drug Name: 
+                        </div>
+                        <input class="btn btn-outline-primary shadow-none p-1 ml-3 ml-auto" style="vertical-align: middle" placeholder="drug name"></input>
+                    </div>
+                    <div class="row text-center">
+                        <div class="align-self-center text-primary m-0 p-2 ">
+                            SMILES: 
+                        </div>
+                        <input class="btn btn-outline-primary shadow-none p-1 ml-3 ml-auto" style="vertical-align: middle" placeholder="canonical smiles"></input>
+                    </div>
+
+                    <div id='SMILE-Submit' class="row mt-4 pl-2 mx-auto mt-auto">
+                        <button class="btn btn-primary shadow-none add-model-to-queue" model-type="BBBA" user = '{{ user.get_username }}' smiles = ''>
+                            Add to Queue
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- DATA Card -->
+        <!-- <div class="col-7 mx-auto mb-4 cc-inactive data-card"> -->
+        <div class="col-3 mx-auto mb-4 data-card">
+            <div class="card h-100 shadow mb-4">
+                <!-- Header -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">GCVA Ticket: Add Data & Edit Parameters</h6>
+                    <div class="dropdown no-arrow">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                    </a>
+                    </div>
+                </div>
+                <!-- Body -->
+                <div class="card-body border-0 d-flex flex-column">
+            
+                    <!-- GCVA model specification dropdown -->
+                    <div class="row text-center">
+                        <div class="align-self-center text-primary m-0 p-2 ">
+                            Specify Model: 
+                        </div>
+                        <select id="gcva-specific-model" class="btn btn-outline-primary p-1 shadow-none ml-3 ml-auto" style="vertical-align: middle" >
+                            <option>GCVA CCLE</option>
+                            <option>GCVA TCGA</option>
+                            <option>GCVA INVIVO</option>
+                            <option>GCVA PDX</option>
+                        </select>
+                    </div>
+                     <!-- Paramter-edit trigger-modal -->
+                    <div class="row text-center">
+                        <div class="align-self-center text-primary m-0 p-2">
+                            Model Parameters: 
+                        </div>
+                        <button type="button" class="btn btn-outline-primary p-1 shadow-none ml-0 mt-2 ml-auto" data-toggle="modal" data-target="#exampleModalCenter">
+                            Edit Paramters
+                        </button>
+                    </div>
+                    <!---->
+                    <div class="was-validated">
+                        <div class="custom-file mb-1 mt-2">
+                            <input type="file" class="custom-file-input" id="ic50Data" required>
+                            <label class="custom-file-label" for="ic50Data">IC50 values...</label>
+                            <div class="invalid-feedback">File required</div>
+                        </div>
+                        <div class="custom-file mb-1">
+                            <input type="file" class="custom-file-input" id="ccleData" required>
+                            <label class="custom-file-label" for="ccleData">CCLE data...</label>
+                            <div class="invalid-feedback">File required</div>
+                        </div>
+                        <div class="custom-file mb-1">
+                            <input type="file" class="custom-file-input" id="genomicData" required>
+                            <label class="custom-file-label" for="genomicData">Genomics file...</label>
+                            <div class="invalid-feedback">File required</div>
+                        </div>
+                    </div>
+                    <!-- Parameter Modal -->
+                    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">
+                                Edit Parameters - 
+                                <b class="text-danger">(Only touch this if you are Misha)</b>
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <ul>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text" id="basic-addon1">input Cut Off</span>
+                                    </div>
+                                    <input type="number" value=0.5 class="form-control" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text" id="basic-addon1">IC50 Cut Off</span>
+                                    </div>
+                                    <input type="number" value=1 class="form-control"  aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text" id="basic-addon1">COV Cut Off</span>
+                                    </div>
+                                    <input type="number" value=0.5 class="form-control" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text" id="basic-addon1">Gene Cut Off</span>
+                                    </div>
+                                    <input type="number" value=0.0 class="form-control" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text" id="basic-addon1">s Cut Off</span>
+                                    </div>
+                                    <input type="number" value=0.7 class="form-control" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text" id="basic-addon1">n Cut Off</span>
+                                    </div>
+                                    <input type="number" value=16 class="form-control" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <!-- <li value="[['Drug1'],['Drug2'],...]">drugs</li> -->
+                            </ul>
+                        </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" style="border: 2px !important;">Save changes</button>
+                            <button class="btn btn-outline-primary p-1 ">Reset Parameters</button>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <!-- end of Modal -->
+                    <div class="row mt-3 p-0 mx-auto mt-auto">
+                        <button type="file" class="btn btn-primary add-model-to-queue" model-type="GCVA">
+                            Add to Queue
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+            </div>
+
+            <div class="col-3 mx-auto mb-4">
+                <div class="card h-100 shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">M2M Ticket</h6>
+                    </div>
+                    <div></div>
+                    <div class="card-body border-0 d-flex flex-column in-developement-mask">
+                        <div class="row mt-4 pl-2 mx-auto mt-auto">
+                            <button class="btn btn-primary shadow-none add-model-to-queue" model-type="M2M">
+                                Add to Queue
+                            </button>
+                        </div>
+                    </div>
+                    <div style="z-index: 100; width: 100%; height: 100%; position: absolute; top: 50%; left: 0;">
+                        <h3 class="rounded" style="background-color: yellow; color: black; transform: rotate(35deg); text-align: center; ">     
+                            In Developement
+                        </h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3 mx-auto mb-4">
+                <div class="card h-100 shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">TTA Ticket</h6>
+                    </div>
+                    <div class="card-body border-0 d-flex flex-column in-developement-mask">
+                        WIP
+                        <div class="row mt-4 pl-2 mx-auto mt-auto">
+                            <button class="btn btn-primary shadow-none add-model-to-queue" model-type="TTA">
+                                Add to Queue
+                            </button>
+                        </div>
+                    </div>                    
+                    <div  style="z-index: 100; width: 100%; height: 100%; position: absolute; top: 50%; left: 0;">
+                        <h3 class="rounded" class="" style="background-color: yellow; color: black; transform: rotate(35deg); text-align: center; ">     
+                            In Developement
+                        </h3>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    <!-- Progress Card -->
+    <!-- <div id="model-run-card" class="card progress-card cc-inactive"> -->
+    <div id="model-run-card" class="card progress-card ">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Model Queue
+                <!-- <div>0</div> -->
+            </h6>
+        </div>
+        <style>
+            .cover{
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                z-index: 100;
+                background-color: black;
+            }
+        </style>
+        <!-- <div class="card-body cover">
+            temp overlay
+        </div> -->
+        <div class="card-body cover-content">
+            <!-- Run Model - Stage 1.2 -->
+            <div id="model-queue" data-stage="2" class="col-12 mx-auto row row-horizon">
+                
+                
+                <!-- Make this a generic form -->
+                <div class="col-2 model-ticket rounded shadow py-2" hidden>
+                    <h3 class="align-items-center">Example #</h3>
+                    <div class="row align-items-center">
+                        <button id="M1-initializing" class="btn btn-secondary mx-auto" type="button" disabled>
+                            <i class="fas fa-check"></i>
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Pending...
+                        </button>
+                    </div>
+                </div>
+                <!-- End of generic form -->
+
+            </div>
+        </div>
+
+
+    <!-- Show Output - Stage 1.3 -->
+
+    </div>
+
+    <!-- Results Card -->
+    <div class="card results-card mt-3" id="model-output-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Outputs</h6>
+        </div>
+        <style>
+            .cover{
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                z-index: 100;
+                background-color: black;
+            }
+        </style>
+        <div id='result-body' class="card-body cover-content">
+        </div>
+    </div>
+
+    <div class="card results-card mt-3" id="model-output-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Report History</h6>
+            <button id="ml-report-refresh" class="btn btn-primary">
+                <i class="fas fa-refresh fa-sm"></i>
+            </button>
+        </div>
+        <div  class="card-body cover-content">
+              
+              <table class="table">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">Date Run</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Ran by User</th>
+                    <th scope="col">Data Files</th>
+                    <th scope="col">Tags</th>
+                    <th scope="col">Report</th>
+                  </tr>
+                </thead>
+                <tbody id="report-body">
+                </tbody>
+              </table>
+        </div>
+    </div>
+
+     <!-- Model Report Modal -->
+     <div class="modal fade" id="model-report-base" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- <ul>
+                <li value=0.5>Data Report here</li>
+            </ul> -->
+        </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    <!-- end of Modal -->
+
+
+    <!-- Convert output into modal and have it possible to generate pdf from it -->
+    <div class="card results-card mt-3" hidden>
+        <div class="card-body cover-content">
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <!-- <th colspan="2" > Dummy Title</th> -->
+                        <th>Cancer</th>
+                        <th>Probability of Success</th>
+                        <th>Recommended Models</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr> 
+                            
+                        <td> Example Cancer </td>
+                    
+                        <td> 79% </td>
+                    
+                        <td> 
+                            <div>In Vitro: RD, HR, RH30</div>    
+                            <div>Ex Vivo: -</div>    
+                            <div>In Vivo: BN5474, BN2276, BN5463</div>    
+                        </td>
+                    
+                    </tr>    
+                    <tr> 
+                            
+                        <td> {Cancer} </td>
+                    
+                        <td> {Probabilty} </td>
+                    
+                        <td> {Recommended Models} </td>
+                            
+                    </tr>
+                    <tr> 
+                            
+                        <td> {Cancer} </td>
+                    
+                        <td> {Probabilty} </td>
+                    
+                        <td> {Recommended Models} </td>
+                            
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-body m-1 p-2 row highlight">
+            <h4 class="col-2">DELVE Complete</h4>
+            <h5 class="col-3">N Cancers Identified</h4>
+            <h5 class="col-5">Show: >90% Probability</h4>
+            <h5 class="col-2">Run Time:</h4>
+        </div>
+    </div>
+
+  <input type="hidden" id="userId" value='{{ user.get_username }}'>
+
+</div>
+
+{% endblock %}

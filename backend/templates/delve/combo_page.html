@@ -1,0 +1,93 @@
+{% extends "delve/base.html" %}
+{% load static %}
+
+{% block body_block %}
+<head>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<!-- CONTENT -->
+<div>
+    <h1>Hello</h1>
+</div>
+<!-- SUMMARY -->
+<div class="row">
+  <div class="form-inline md-form mr-auto mb-4" style="padding-right: 50px;">
+    <h5>Hi peepes</h5>                
+  </div>
+  <!-- SEARCH -->
+  <div style="text-align: center;">
+    <form class="form-inline md-form mr-auto " style="transform: scale(1);" >
+      <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" >
+      <button class="btn aqua-gradient btn-rounded my-0" type="submit" >Search</button>
+    </form>
+  </div>
+</div>
+
+<!-- SIDE BY SIDE -->
+<div class="row" style="text-align: center; background-color: gray; padding: 5px;;">
+  <div class="col-sm-6" style="height: 100%; display: flex; align-items: center; justify-content: center;">
+      {{ ic50|safe }}
+  </div>
+
+  <div class="col-sm-6" style="height: 100%; display: flex; align-items: center; justify-content: center;">
+      <body class="column">
+        <div>
+          <button onclick="model();">Drug 1!</button>
+          <button onclick="model();">Drug 2!</button>
+        </div>     
+        <div class="border border-primary" id="myDiv"></div>
+      </body>
+  </div>
+</div>
+    <!-- IC50 GRAPH -->
+    <!-- INDICATION (indications of what cancer is prevailant) GRAPH -->
+
+<!-- X is the MMMRS system of te 5 types of synergy scores -->
+<!-- LIST OF REPORTS LEADING BY X -->
+<div class="row">  
+  <div class="list-group" style="padding-right: 10px;">
+    {% for report in scored_reports %}
+      
+    {% endfor %}
+    <a href="#" class="list-group-item">First item<span class="badge">21</span></a>
+    <a href="#" class="list-group-item">Second item<span class="badge">0</span></a>
+    <a href="#" class="list-group-item">Third item<span class="badge">3</span></a>
+  </div>  
+  <div class="list-group">
+    {% for report in new_reports %}
+
+    {% endfor %}
+    <a href="#" class="list-group-item">First item<span class="badge">1</span></a>
+    <a href="#" class="list-group-item">Second item<span class="badge">11</span></a>
+    <a href="#" class="list-group-item">Third item<span class="badge">313</span></a>
+  </div>
+</div>
+<!-- SEE ALL -->
+
+
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+<script>
+
+  var data=[{
+          // color:'rgb(300,100,200)',
+          type: 'surface',
+          z: "{{cyto}}"
+      }];
+  var layout = {
+  title: 'Model-Generated Cytos',
+  autosize: false,
+  width: 500,
+  height: 500
+  // margin: {
+  //   l: 65,
+  //   r: 50,
+  //   b: 65,
+  //   t: 90,
+  //   }
+  };
+  Plotly.newPlot('myDiv', data, layout);
+</script>
+
+{% endblock %}

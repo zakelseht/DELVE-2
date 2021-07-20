@@ -1,0 +1,161 @@
+{% extends "delve/base.html" %}
+{% load staticfiles %}
+{% static "js/surface3d.js" %}
+{% block body_block %}
+<head>
+
+  <meta charset="utf-8">
+  <style>
+    body{
+      padding: 10px;
+    }
+    svg path{
+      stroke: #000;
+      stroke-width: 1px;
+      stroke: rgba(0,0,0,0.2);
+    }
+    svg{
+      border: 1px solid #DED8BF;
+      background-color: #f4f4d9;
+      width: 700px;
+      height: 400px;
+    }
+    h1{
+      font-weight: normal;
+      margin: 0;
+      padding-left: 5px;
+      color: #53483e;
+    }
+    p{
+      margin: 0;
+      margin-bottom: 10px;
+      padding-left: 5px;
+      color: #917e6b;
+    }
+    {% comment %} ul{
+      width: 200px;
+      float: left;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      padding-right: 10px;
+    }
+    li{
+      cursor: pointer;
+      background-color: #c8ad93;
+      padding: 10px;
+      margin: 2px;
+      color: #fff;
+    } {% endcomment %}
+  </style>
+</head>
+<body style="width:100%;height:100%;">
+  <p id="d3" >Second paragraph</p>
+  <div class="d3_test"></div>
+  <h1>D3.js Surface Plots</h1>
+  <p>Drag graph to change view</p>
+  <button class="myButton">w</button>
+</body>
+  <script>
+  var yaw=0.5,pitch=0.5, width=700, height=400, drag=false;
+
+  function dataFromFormular(func){
+    var output=[];
+    for(var x=-20;x<20;x++){
+      var f0=[];            
+      output.push(f0);
+      for(var y=-20;y<20;y++){
+          f0.push(func(x,y));
+      }
+    }
+    return output;
+  }
+
+  var surfaces=[
+    {
+      name: 'Dataset 1',
+      data: [[5,2,3],[3,2,3],[9,2,3],[12,41,22],[31,3,1231]]
+
+    },
+    {
+      name: 'Dataset 2',
+      data: [[5,2,3],[3,2,3],[9,2,3],[12,41,22],[31,3,1231]]
+    },
+    {
+      name: 'Dataset 3',
+      data: dataFromFormular(function(x,y){
+          return -(Math.cos(Math.sqrt(x*x+y*y)/6*Math.PI)+1)*300/(Math.pow(x*x+y*y+1,0.3)+1)+50;
+        })
+    }
+  ];
+  var selected=surfaces[0];
+
+  // Create html divs and elements
+  var xAxis = d3.svg.axis()
+      .scale(2)
+        .ticks(4) //specify number of ticks 
+      .orient("bottom");  
+
+
+  d3.select("#p2").style("color", "green");
+  
+  var ul=d3.select("#d3")
+           .append('ul');
+
+  var svg=d3.select('#d3')
+          .append('svg:svg')
+            .attr('height',height)
+            .attr('width',width);
+
+  var fig = svg.append("g")
+                {% comment %} .call(xAxis); {% endcomment %}
+
+
+
+
+// Add graphs to html elements
+    var md=fig.data([surfaces[0].data])
+    .surface3D(width,height)
+      .surfaceHeight(function(d){ 
+        return d;
+      }).surfaceColor(function(d){
+        var c=d3.hsl((d+100), 0.6, 0.5).rgb();
+        return "rgb("+parseInt(c.r)+","+parseInt(c.g)+","+parseInt(c.b)+")";
+      }); 
+
+// Add buttons
+  ul.selectAll('li')
+    .data(surfaces)
+      .enter().append('li')
+        .html(function(d){
+          return d.name
+        }).on('mousedown',function(){
+          md.data([d3.select(this).datum().data]).surface3D()
+            .transition().duration(500)
+            .surfaceHeight(function(d){
+              return d;
+            }).surfaceColor(function(d){
+              var c=d3.hsl((d+100), 0.6, 0.5).rgb();
+              return "rgb("+parseInt(c.r)+","+parseInt(c.g)+","+parseInt(c.b)+")";
+            });
+        });
+// Add rotation to greaphs
+  svg.on("mousedown",function(){
+    drag=[d3.mouse(this),yaw,pitch];
+  }).on("mouseup",function(){
+    drag=false;
+  }).on("mousemove",function(){
+    if(drag){            
+      var mouse=d3.mouse(this);
+      yaw=drag[1]-(mouse[0]-drag[0][0])/50;
+      pitch=drag[2]+(mouse[1]-drag[0][1])/50;
+      pitch=Math.max(-Math.PI/2,Math.min(Math.PI/2,pitch));
+      md.turntable(yaw,pitch);
+    }
+  });
+  $('myButton').click(function(e) {
+      this.html("Howdy");
+      console.log("Sup buddy")
+      })
+  </script>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "delve/base.html" %}
+
+{% block body_block %}
+<div class="container">
+  <div class="jumbotron">
+    <h1>Welcome to the Combo List Page!</h1>
+  </div>
+</div>
+<table class="table table-dark">
+    <thead>
+        <tr>
+            <th>Drug 1</th>
+            <th>Drug 2</th>
+            <th>Cell Line</th>
+            <th>Scientist</th>
+            <th>Experiment</th>
+            <th>Processed</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in info %}
+            <tr>
+                {% for bit in item %}
+                    <td>{{ bit }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

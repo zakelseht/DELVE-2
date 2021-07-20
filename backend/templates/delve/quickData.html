@@ -1,0 +1,178 @@
+<!-- path/to/and/name.html (optional but usefull)-->
+{% extends "delve/base.html" %}
+{% comment %} Data binding {% endcomment %}
+{% load staticfiles %}
+{% comment %} {% static "channels/js/websocketbridge.js" %} {% endcomment %}
+
+{% block head %}
+<script src="{% static 'js/delve/AJAX_CALLS.js' %}"></script>
+<script src="{% static 'js/delve/quickData.js' %}" defer></script>
+{% endblock %}
+
+
+{% block body_block %}
+
+<style>
+    .bootstrap-tagsinput {
+    width: 40%;
+    /* display: none; */
+    }
+    .tag{
+        background-color: #007bff;
+        padding: 3px 15px;
+        border-radius: 15px;
+
+    }
+</style>
+
+<div class="ml-4">
+
+    <h1>Quick Data Page</h1>
+    <!-- Graphics -->
+    <div class="row ml-3">
+        <h6>Add Graphics</h6>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <input id="graphicRequest"type="text" name="search" autocomplete="off">
+            <button id="graphicButton" >+</button>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Button trigger modal -->
+        <button name="graphics-input" type="button" class="btn btn-primary mt-2 ml-3" data-toggle="modal" data-target="#exampleModal">
+            Show Graphics
+        </button>
+        <!-- <span class="row"> Name of graphic </span> -->
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class=" modal-body graphic-modal-body">
+                
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <hr class="sidebar-divider mb-4">
+
+    <!-- General Data Info -->
+    <div class="row ml-3">
+        <h6>Drugs, Cell Line, Indication, IC50 (use coma to deliniate)</h6>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <!-- <input class="form-control select2" id="SearchString" multiple="multiple" style="width: 100%;"> -->
+            <select class="form-control select2" id="SearchString" multiple="multiple" style="width: 100%;"></select>
+            <button class="btn btn-info mt-4" style="color: yellow;" id="SearchStringBtn" >Search keywords</button>
+            <button class="btn btn-info mt-4" style="color: yellow;" id="Refresh" >
+                <span class="glyphicon fa fa-refresh"></span> Refresh
+            </button>
+        </div>
+        <!-- <div class="col-4">
+            <button onclick="showGraphic()">Show Graphics</button>
+        </div> -->
+    </div>
+    
+    <script>
+    //     	$('#SearchString').tagsInput({
+	// 	'onAddTag': function(input, value) {
+	// 		console.log('tag added', input, value);
+	// 	},
+	// 	'onRemoveTag': function(input, value) {
+	// 		console.log('tag removed', input, value);
+	// 	},
+	// 	'onChange': function(input, value) {
+    //         console.log('change triggered', input, value);
+    //     },
+        
+	// });
+    $('#SearchString').on('change', function () {
+        //   $('#SearchString').tagsinput('removeAll');
+        console.log($('#SearchString').val())
+    });
+
+    // $('.js-example-basic-multiple').select2();
+
+    </script>
+
+    <!--  -->
+    <hr class="sidebar-divider mb-4">
+    <input type="text" id="search">
+    <hr class="sidebar-divider mb-4">
+            <div id="textContainer">
+            <style>
+                #textContainer {
+                width:300px;
+                }
+                .selected {
+                background-color:blue;
+                }
+            </style>
+                lorem ipsum is simply dummy text of the printing and typesetting industry. lorem ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of letraset sheets containing lorem ipsum passages, and more recently with desktop publishing software like Aldus pagemaker including versions of lorem ipsum.
+            </div>
+    <hr class="sidebar-divider mb-4">
+    <!-- API calls -->
+    <div class="row ml-3">
+        <h6>API calls</h6>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <input type="text" name="search" autocomplete="off" >
+            <div class="d-inline dropdown">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                  GET/POST
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="#">GET</a>
+                  <a class="dropdown-item" href="#">POST</a>
+                </div>
+              </div>
+            <button id="getAPIrequest" class="btn btn-primary">Send request</button>
+        </div>
+    </div>
+    <div class="mt-3 row container">
+        <iframe src="/API/nav/" frameborder="0"></iframe>
+    </div>
+    <hr class="sidebar-divider mb-4">
+    <h3>Next Steps</h3>
+    <ul>
+        <li>have a get that makes a list of all api in ajax.py</li>
+        <li>add api request for only the model, i.e: getCellLines, getCancers, getDrugs</li>
+        <li>add api to get ic50 for requested drug</li>
+        <li>add results page for main search now that you can search any combination of things</li>
+        <li>add result pages for cancers drugs and cell lines</li>
+    </ul>
+    <h3>What we need to do for this page</h3>
+    <ul> 
+        <li>make a graphic interface like the cod ttk project</li>
+        <li>make a general search for any graphic in the framework</li>
+    
+    </ul>
+
+    <h3>What we need to do for delve</h3>
+    <ul> 
+        <li>Add serializers</li>
+        <li>Add loading wheel for pages</li>
+        <li>make self defined string names (__str__) for each model</li>
+        <li>make methods spefific to each model</li>
+        <li>make an interactive map for delve</li>
+        <li>make an interactive cancer map</li>
+    </ul>
+
+
+    <h3 id='ex_h3'> What Exists</h3>
+
+</div>
+{% endblock %}

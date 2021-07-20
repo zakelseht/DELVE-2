@@ -1,0 +1,90 @@
+<!-- path/to/and/name.html (optional but usefull)-->
+{% extends "delve/base.html" %}
+{% comment %} Data binding {% endcomment %}
+{% block body_block %}
+
+<body style="text-align: center; padding: 100px;">
+
+    <!-- HOME -->
+    <h1 style="padding: 1% 5%;">In House Experimental IC50</h1>
+
+    <!-- Card for data -->
+    <div class="row">
+        <div style="padding-left: 5%;">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ combo.name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Unique ID: {{combo.id}}</h6>
+                    <p class="card-text"> {{ drug.drug_name }} (drug) tested on cell line ({{ cellLine.cell_line }}). quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <p>Scientist: {{combo.Scientist}}</p>
+                    <p>Drug Code Name: {{drug.code_name}}</p>
+                    <p>Cell Line: {{combo.CellLine}}</p>
+                    <p>Indication: <br>{{cellLine.indication}}</p>
+                    <p>Replicate Number: --</p>        
+                    <a href="{{combo.get_absolute_url}}" class="card-link">Report link</a>
+                </div>
+            </div>
+            <!--  -->
+            <!-- Card info -->
+            <div class="card" style="width: 18rem;">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">IC50-graph</li>
+                    <li class="list-group-item">(Other methods of IC50 calculation?)</li>
+                    <li class="list-group-item">Concordance</li>
+                    <li class="list-group-item">Add</li>
+                </ul>
+            </div>           
+        </div>
+        <div class="card" style="width: 50%">
+            <div class="card-body">
+                <h5 class="card-title">IC50 for {{ drug.drug_name }}</h5>
+                {{ ic50|safe }}
+            </div>
+        </div>
+    </div>
+    <div class="card text-left" style="padding-top: 10px;">
+            <div class="card-header">
+              <ul class="nav nav-tabs card-header-tabs">
+                <li class="nav-item">
+                  <a class="nav-link active" href="#">Metrics</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">--</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link disabled" href="#">--</a>
+                </li>
+              </ul>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Metrics</h5>
+                <p class="card-text">
+                    <ul>
+                        <li>Average Calculated IC50</li>
+                        <li>Standard Deviation</li>
+                        <li>Concordance of triplicate</li>
+                        <li>Rank in {{ Cancer.cancer_name }}</li>
+                        <li>Rank in {{ drug.drug_name }}</li>
+                        <li>Raw Data</li>
+                        <li>Calculated Surface</li>
+                        <li>Notes</li>
+                    </ul>
+                </p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <div class="card-footer text-muted">
+                    2 days ago
+                </div>
+            </div>
+          </div>
+    <!--  -->
+
+    {% if request.user.is_superuser %}
+        <a class="btn btn-dark" style="text-align: right;"href="">Edit this IC50 (i.g add notes)</a>
+    {% endif %}
+
+    <!--  -->
+</body>
+
+
+
+{% endblock %}

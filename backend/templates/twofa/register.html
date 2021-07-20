@@ -1,0 +1,54 @@
+{% extends "delve/base_head_only.html" %}
+
+{% block body_block %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+      <div class="card panel-default">
+        <div class="card-heading">
+          <h5 class="pt-3 card-title text-center">Register</h5>
+        </div>
+        <div class="card-body">
+          <form action="{% url 'register' %}" method="POST" role="form">
+            
+              {% csrf_token %}
+              {{ form.non_field_errors }}
+              {{ form.email.errors }}
+              {{ form.country_code.errors }}
+              {{ form.phone_number.errors }}
+              {{ form.password.errors }}
+             
+              <div class="row">
+                {{ form.first_name }} {{ form.last_name }}
+              </div>
+              <div class="row">
+                {{ form.email }}
+              </div>
+              <div class="row">
+                {{ form.country_code }} {{ form.phone_number }}
+              </div>
+              <div class="row">
+                {{ form.password }} {{ form.confirm_password }}
+              </div>
+  
+              <input type="submit" value="Register" class="btn btn-info btn-block">
+              <small style="float: right;"><a href="{% url 'user_login' %}">Login</a></small>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

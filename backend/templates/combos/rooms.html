@@ -1,0 +1,130 @@
+
+<!-- chat/templates/chat/room.html -->
+{% extends "delve/base.html" %}
+{% load static %}
+
+{% block body_block %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Room</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    What chat room would you like to enter??<br/>
+    <input id="chat-message-input" type="text" size="100"/><br/>
+    <input id="chat-message-submit" type="button" value="Enter"/>
+  <!-- CONTENT -->
+  <div>
+      <h1>Hello</h1>
+  </div>
+  <!-- SUMMARY -->
+  <div class="row">
+    <div class="form-inline md-form mr-auto mb-4" style="padding-right: 50px;">
+      <h5>Hi peepes</h5>                
+    </div>
+    <!-- SEARCH -->
+    <div class="form-inline" style="text-align: center;">
+        <input id="room-name-input" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" >
+        <button id="room-name-submit" class="btn aqua-gradient btn-rounded my-0" type="submit" >Search</button>
+    </div>
+  </div>
+  
+  <!-- SIDE BY SIDE -->
+  <div class="row" style="text-align: center; background-color: gray; padding: 5px;;">
+    <div class="col-sm-6" style="height: 100%; display: flex; align-items: center; justify-content: center;">
+        {{ ic50|safe }}
+        <div id="ic50" ></div>
+    </div>
+  
+    <div class="col-sm-6" style="height: 100%; display: flex; align-items: center; justify-content: center;">
+        <body class="column">
+          <div>
+            <button id="basic-submit">Drug 1!</button>
+            <button onclick="model();">Drug 2!</button>
+          </div>     
+          <div class="border border-primary" id="myDiv"></div>
+        </body>
+    </div>
+  </div>
+      <!-- IC50 GRAPH -->
+      <!-- INDICATION (indications of what cancer is prevailant) GRAPH -->
+  
+  <!-- X is the MMMRS system of te 5 types of synergy scores -->
+  <!-- LIST OF REPORTS LEADING BY X -->
+  <div class="row">  
+    <div class="list-group" style="padding-right: 10px;">
+      {% for report in scored_reports %}
+        
+      {% endfor %}
+      <a href="#" class="list-group-item">First item<span class="badge">21</span></a>
+      <a href="#" class="list-group-item">Second item<span class="badge">0</span></a>
+      <a href="#" class="list-group-item">Third item<span class="badge">3</span></a>
+    </div>  
+    <div class="list-group">
+      {% for report in new_reports %}
+  
+      {% endfor %}
+      <a href="#" class="list-group-item">First item<span class="badge">1</span></a>
+      <a href="#" class="list-group-item">Second item<span class="badge">11</span></a>
+      <a href="#" class="list-group-item">Third item<span class="badge">313</span></a>
+    </div>
+  </div>
+  </body>
+<script>
+    var loc = window.location
+    var wsStart = 'ws://'
+    if (loc.protocol == 'https:'){
+    wsStart = 'wss://'
+    }
+    var comboSocket = new WebSocket(wsStart + loc.host + loc.pathname);
+    // var comboSocket = new WebSocket(url + '?user_id=' + "{{ request.user.id }}");
+    comboSocket.onopen = function open(e) {
+        if(this.data)
+        {
+          console.log("Data found")
+          var data = JSON.parse(event.data["message"]);
+          console.log("Yes", data)
+        }
+        else if(event)
+        {
+          console.log("Data not found; event found")
+          var data = (event.data);
+          console.log(data)
+          $("#ic50").html(data);
+        }
+        else
+        {
+          console.log("fail")
+        }
+    };
+    comboSocket.onmessage = function(e) {
+        console.log("On message")
+        var data = JSON.parse(e.data);  
+        console.log(data)
+        document.querySelector('#ic50').value = data['ic50'];
+    };
+
+    // comboSocket.onclose = function(e) {
+    //     console.error('Chat socket closed unexpectedly');
+    // };
+
+    comboSocket.onerror = function(e){
+        console.log("Oops, error", e)
+    }
+    
+    $('#chat-message-input').focus();
+
+    $('#basic-submit').click(function(e) {
+        var readit = WebSocket.url
+        console.log("hi");
+        console.log(readit);
+        comboSocket.send(JSON.stringify({
+            'message': "basic message sent"
+        }));
+    });
+
+</script>
+</html>
+{% endblock %}

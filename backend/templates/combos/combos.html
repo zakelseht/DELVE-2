@@ -1,0 +1,131 @@
+
+<!-- chat/templates/chat/room.html -->
+{% extends "delve/base.html" %}
+{% comment %} Data binding {% endcomment %}
+{% load staticfiles %}
+{% static "channels/js/websocketbridge.js" %}
+
+{% block body_block %}
+<body>
+  <!-- Model Panel -->
+  <div class="jumbotron jumbotron-fluid" style="height:500px;width:100%%;">
+    <div class="form-row" style="height:100%;">
+      <div class="form-group col-md-4" style="padding-right:30px">
+        <label style="padding-bottom:10px;" >Figure:</label>
+          <select id="panel-choice" class="form-control form-control-lg">
+            <option>IC50</option>
+            <option>Neural Net. Model</option>
+            <option>MMRS</option>
+          </select>
+          {% if false %}
+            <input type="submit" value="Combo">
+          {% elif 1 > 0 %}
+          <div class="col" style="padding: 20px 0px;">
+            <input type="input" value="Drug1">
+            <input type="input" value="Drug2">
+          </div>
+          {% else %}
+            <input type="submit" value="last">
+          {% endif %}
+          <button id="basic-submit" style="position:absolute; left:10px; bottom:10px;">View</button>
+      </div>
+      <!-- Visual -->
+      {% comment %} <iframe id="igraph" scrolling="no" style="border:none;" seamless="seamless" src="https://plot.ly/~chris/1638.embed" height="525" width="100%" id="panel-visual"></iframe> {% endcomment %}
+      <div id="panel-visual" class="col-md-8 block-parent bfc-root" style="text-align: center; display: inline-bock;">Loading</div>
+      {% comment %} <div class="form-group col-md-6" style="height: 500px; width: 500px; display: flex; align-items: center; justify-content: center;" id="panel-visual">
+      </div> {% endcomment %}
+    </div>
+  </div>
+  <!-- SIDE BY SIDE -->
+      <!-- IC50 GRAPH -->
+      <!-- INDICATION (indications of what cancer is prevailant) GRAPH -->
+  
+  <!-- X is the MMMRS system of te 5 types of synergy scores -->
+  <!-- LIST OF REPORTS LEADING BY X -->
+  <div class="row">  
+    <div class="list-group" style="padding-right: 10px;">
+      {% for report in scored_reports %}
+        
+      {% endfor %}
+      <a href="#" class="list-group-item">First item<span class="badge">21</span></a>
+      <a href="#" class="list-group-item">Second item<span class="badge">0</span></a>
+      <a href="#" class="list-group-item">Third item<span class="badge">3</span></a>
+    </div>  
+    <div class="list-group">
+      {% for report in new_reports %}
+  
+      {% endfor %}
+      <a href="#" class="list-group-item" style=>First item<span class="badge">1</span></a>
+      <a href="#" class="list-group-item">Second item<span class="badge">11</span></a>
+      <a href="#" class="list-group-item">Third item<span class="badge">313</span></a>
+      
+    </div>
+  </div>
+
+
+  <!-- Search Results -->
+    <div class="jumbotron jumbotron-fluid" style="height:500px;width:100%%;">
+      <div class="form-row" style="height:100%;">
+      {% for result in page.object_list %}
+            {{ result.object.title }}
+            {{ result.object.description }}
+          {{ result.object.created_on }}
+          {% empty %}           
+              No results found.
+          {% endfor %}
+      </div>
+    </div>
+  <!---->
+  </body>
+<script>
+    var loc = window.location
+    var wsStart = 'ws://'
+    if (loc.protocol == 'https:'){
+    wsStart = 'wss://'
+    }
+    var comboSocket = new WebSocket(wsStart + loc.host + loc.pathname);
+    comboSocket.onopen = function open(e) {
+      console.log("Connected")
+      $("#panel-visual").html("Connected")
+
+    };  
+    comboSocket.onclose = function open(e) {
+      console.log("Reconnecting")
+      comboSocket = new WebSocket(wsStart + loc.host + loc.pathname);
+
+
+    };
+   
+    comboSocket.onmessage = function(e) {
+        var data = JSON.parse(e.data);  
+        if(data){
+          console.log("Client received data:", data)
+        }
+        $("#panel-visual").html(data['figure'])
+    };
+
+    comboSocket.onerror = function(e){
+        console.log("Oops, error", e)
+    }
+    
+    $('#panel-choice').click(function(e) {
+        console.log(this.value)
+        {% comment %} if($('#panel-choice').) {% endcomment %}
+        comboSocket.send(JSON.stringify({
+            'selecting-visual': this.value
+        }));        
+    });
+  
+    $('#basic-submit').click(function(e) {
+        var graph = document.getElementById('panel-choice').value;
+        console.log(graph);
+        $("#panel-visual").html("Loading Visual...");
+        comboSocket.send(JSON.stringify({
+            'choice': graph,
+            'panel-submit': "submit button pressed, desired graph queried",
+        }));
+    });
+</script>
+{% comment %} d3js.org for animating graphs; put in static scripts {% endcomment %}
+
+{% endblock %}

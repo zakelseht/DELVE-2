@@ -1,0 +1,20 @@
+{% if ic50s %}
+<table class="table table-dark table-hover" style="width:50%; overflow:auto;" id="ic50_id">
+  <thead>
+
+    <tr style="background-color:blueviolet;">
+      <th>Ic50 ID </th>
+      <th>Effect</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for ic50 in ic50s %}
+    <td>{{ ic50.id }}</td>
+    <td>{{ ic50.effect }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endif %}

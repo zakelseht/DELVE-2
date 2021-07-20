@@ -1,0 +1,254 @@
+{% extends "delve/base.html" %}
+{% load static %}
+
+
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/delve/upload.css' %}">
+<script src="{% static 'js/delve/upload.js' %}"></script>
+{% endblock %}
+
+{% block body_block %}
+
+<body>
+  <div class="container-fluid">
+    
+    {% if not stage %}
+    <!-- File Submission -->
+    <div class="col-xl-4 col-md-6 mb-4 mx-auto">
+      <div class="card shadow mb-4">
+        
+        <!-- Content Header -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between ">
+          <h6 class="m-0 font-weight-bold text-primary">Drug Combos: Data Table Generator</h6>
+        </div>
+        <!-- End of Content Header -->
+        <div class="card-body">
+    
+          <form action="" enctype="multipart/form-data" method="POST">
+            {% csrf_token %}
+            <div class="custom-file mb-3">
+              <input type="file" class="custom-file-input" id="experiment_data_id" name="experiment_data">
+              <label class="custom-file-label" for="customFile">Choose file</label>
+            </div>
+            <div class="text-center">
+              <input type="submit" class="mt-4 d-none d-sm-inline-block btn btn-primary shadow-sm fa-download text-50" value="Extract IC50 Synergy Tables">
+
+              <!-- <a type="submit" id="sender" name='extract_file' href="#" class="mt-4 d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                <i class="fas fa-download fa-sm text-white-50"></i> Extract IC50 Synergy Tables</a> -->
+            </div>
+          </form>
+          
+        </div>
+      </div>
+    </div>  
+    <!-- Enf File Submission -->
+    {% endif %}
+    {% if stage == '1' %}
+  <!-- Excel Table Select -->
+  <div class="text-center mb-2">
+    <!-- <button id="smart-search" class="btn btn-danger btn-rounded btn-sm p-2" style="border-radius: 10em;">smart-search (default)</button>
+      <button class="btn btn-danger btn-rounded btn-sm p-2 " style="border-radius: 10em;">View from raw</button> -->
+      <div class="btn-group btn-group-toggle" data-toggle="buttons">
+        <h5 class="inline mr-4">Data view preference:</h5>
+        <label class="btn btn-danger active">
+          <input type="radio" name="data-view" id="data-smart-search" value="smart-search"> smart-search
+        </label>
+        <label class="btn btn-danger">
+          <input type="radio" name="data-view" id="data-Raw" value="Raw"> View Raw
+        </label>
+        <label class="btn btn-danger">
+          <input type="radio" name="data-view" id="data-Edit" value="Edit"> Edit mode
+        </label>
+      </div>
+      <label class="form-check-label ml-5">
+        <input type="checkbox" class="form-check-input" value="" disabled>Is this a standard-sized (6x6) cyto test?
+      </label>
+
+  </div>
+  <hr class="sidebar-divider my-4">
+  <div class="row">
+    <button class="col-1 btn btn-secondary">Back</button>
+    <h5 class="col-6 mx-auto text-center alert alert-info">
+        <strong>Stage 1:</strong> 
+        Highlight the Cytotoxicity Data to be used
+        <span class="fa fa-question-circle" data-toggle="popover" title="How-to select" data-content="Some content inside the popover"></span>
+        <!-- <button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Vivamus
+        sagittis lacus vel augue laoreet rutrum faucibus."> -->
+
+    </h5>
+    <button id="goStage2" class="col-1 btn btn-success">Next</button>
+  </div>
+  <hr class="sidebar-divider my-4">
+  <div class="mb-4 overflow-auto"   style="height: 650px;text-align: center;">
+    {{ sheet|safe }}
+  </div>  
+  <div class="col-xl-4 col-md-6 mb-4 mx-auto">
+    <div class="card shadow mb-4">
+      
+      <!-- Content Header -->
+      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between ">
+        <h6 class="m-0 font-weight-bold text-primary">Drug Combos: Select the correct Final Table</h6>
+      </div>
+      <!-- End of Content Header -->
+      <div id='sheets' class="card-body">
+
+        <!-- TABLE GENERATION -->
+        {% if not excel_table %}
+        <div class="container card">
+        <div class="card-header" class=".form-inline" style="text-align:center;display: inline-block;">
+            <div style="display: inline-block;">  
+              <form action="{% url 'upload' %}" method="POST" enctype="multipart/form-data" name="upload_sheet" id="formData">
+                {% csrf_token %} 
+                <button type="submit" id="generate_CI" class="btn btn-outline-primary" name="generate_report">Use selected cells</button>
+                <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+                <input  value={{table_idx}} name="table_idx" type="hidden">
+              </form>
+            </div>
+            <div style="display: inline-block;">  
+            Tables:
+            {% for table in excel_table %}
+            <div style="display: inline-block" >
+              <!-- INDEX BUTTONS -->
+              <form action="{% url 'upload' %}" method="POST" enctype="multipart/form-data" name="upload_sheet" id="formData">
+                {% csrf_token %} 
+                <button type="submit" class="btn btn-warning"  value={{forloop.counter}} name="selected_table" >{{forloop.counter}}</button>
+              </form>
+            </div>    
+            {% endfor %}
+          </div>
+        </div> 
+        <!-- TABLE FROM INDEX -->
+          <div>
+          Excel tables:
+
+          </div>
+          {% for table in excel_table %}
+            <!-- if forloop.counter == show_table -->
+            {% if forloop.counter == table_idx %}
+                <div class="w-25 p-3">
+                  {% autoescape off %}
+                  {{table}}
+                  {% endautoescape %}
+                  {{ table|safe }}
+                </div> 
+            {% endif %}
+          {% endfor %}
+        </div>   
+        {% endif %}
+        <!-- END OF TABLE GENERATION -->
+        
+      </div>
+    </div>
+  </div>  
+  <!-- Enf of select  -->
+    {% endif %}
+
+    <!-- Content Row -->
+    <div class="row">
+      {% if False %}
+      
+      <!-- ADA VERSION OF UPLOAD PAGE INPUT (MAKE A FORM FOR IT) -->
+      <div class="col-xl-8 col-md-6 mb-4" >
+        <div class="card shadow mb-4">
+          <!-- Content Header -->
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Drug Combos: Report Info</h6>
+          </div>
+          <!-- End of Content Header -->
+          <form class="mb-4" action="{% url 'upload' %}" method="POST" enctype="multipart/form-data" name="upload_sheet" id="formData">
+            {% csrf_token %}
+            <!-- {{ form.as_table }}  -->
+            
+            {% for field in form %}
+            <div style="text-align:left;" class="col-sm-6">
+              <b>{{ field.label_tag }}</b>  {{ field }} 
+            </div>
+            {% endfor %}
+          </form>
+        </div>
+      </div>
+      {% endif %}
+      
+      
+        
+     
+  </div>
+<div class="row">
+{% if False %}
+  <!-- Area Chart -->
+  <div class="col-xl-8 col-lg-7">
+    <div class="card shadow mb-4">
+      <!-- Card Header - Dropdown -->
+      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Tables</h6>
+        <div class="dropdown no-arrow">
+          <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+            <div class="dropdown-header">Dropdown Header:</div>
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Something else here</a>
+          </div>
+        </div>
+      </div>
+      <!-- Card Body -->
+{% endif %}
+
+
+    </div>
+  </div>
+
+  <!-- Progress bar  -->
+        <div class="col-xl-4 col-lg-5 mx-auto">
+    <div class="card shadow mb-4">
+      <!-- Card Header - Dropdown -->
+      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Progression</h6>
+        <div class="dropdown no-arrow">
+          <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+            <div class="dropdown-header">Dropdown Header:</div>
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Something else here</a>
+          </div>
+        </div>
+      </div>
+      {% if progress %}
+        <div class="progress mx-auto mt-4 mb-4" data-value={{progress}}>
+        {% else %}
+        <div class="progress mx-auto mt-4 mb-4" data-value='25'>
+      {% endif %}
+          <span class="progress-left">
+                        <span class="progress-bar border-primary"></span>
+          </span>
+          <span class="progress-right">
+                        <span class="progress-bar border-primary"></span>
+          </span>
+          <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+            {% if progress %}
+            <div class="h2 font-weight-bold">{{progress}}<sup class="small">%</sup></div>
+            {% else %}
+            <div class="h2 font-weight-bold">25<sup class="small">%</sup></div>
+          {% endif %}
+          </div>
+        </div>
+        <!-- END -->
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+</body>
+
+{% endblock %}

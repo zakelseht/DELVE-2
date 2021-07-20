@@ -1,0 +1,82 @@
+{% extends "delve/base.html" %}
+{% load static %}
+
+{% block body_block %}
+
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src='http://code.jquery.com/jquery-3.3.1.min.js' integrity="sha256-FgpCb/KJQlLNf0u91ta329/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<div style="margin: 0% 20%;">
+
+        <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th><b>Report Name</b></th>
+
+                        <th><b>Drug 1</b></th>
+
+                        <th><b>Drug 2</b></th>
+
+                        <th><b>Cell Line</b></th>
+
+                        <th><b>Scientist</b></th>
+
+                     
+                        <th><b>PDF Download</b></th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                        {% for report in report_idx %}
+                        <tr>
+                            <td><a href="{{ report.get_absolute_url }}">{{ report.name }}</a></td>
+                            <td>{{ report.drug_1 }}</td>
+                            <td>{{ report.drug_2 }}</td>
+                            <td>{{ report.CellLine }}</td>
+                            <td>{{ report.Scientist.scientist_name }}</td>
+
+                            <td style="height:80%;"><a class="btn btn-outline-dark" href="{{ report.get_absolute_url }}">View</a></td>
+                            <td style="padding-top:1px; height:80%;">
+                                <form action="{{ report.get_absolute_url }}"  method="GET"   enctype="multipart/form-data" name="upload_sheet" id="formData">
+                                    <input type='hidden' id="id" name="id" value="{{ report.id }}" />
+                                    <button type="submit" name='Download' class="btn btn-outline-dark" >
+                                        <span class="glyphicon glyphicon-download-alt"></span> 
+                                    </button>
+                                </form>
+                            </td>
+
+
+                            
+                        </tr>
+                        {% endfor %}
+
+                </tbody>
+            </table>
+    
+    
+    <div class="pagination">
+        <span class="step-links">
+            {% if report_idx.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ report_idx.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ report_idx.number }} of {{ report_idx.paginator.num_pages }}.
+            </span>
+
+            {% if report_idx.has_next %}
+                <a href="?page={{ report_idx.next_page_number }}">next</a>
+                <a href="?page={{ report_idx.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    
+</div>
+
+
+{% endblock %}

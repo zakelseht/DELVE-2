@@ -1,0 +1,19 @@
+#!/bin/bash
+pip install virtualenv
+virtualenv venv
+source venv/bin/activate
+pip install -r requirements.txt
+sudo mkdir -p /etc/paths.d &&
+echo /Applications/Postgres.app/Contents/Versions/latest/bin | sudo tee /etc/paths.d/postgresapp
+createdb test2
+cat >> delve_site/local_settings.py << EOF
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME' : "test2",
+        'USER' : "postgres",
+        'PASSWORD' : "password",
+        'HOST' : "localhost",
+        'PORT' : "5432",
+    }
+}
